@@ -1,0 +1,7 @@
+<h2>Student Profile</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ u_form.as_p }}
+  {{ s_form.as_p }}
+  <button type="submit">Save</button>
+</form>
