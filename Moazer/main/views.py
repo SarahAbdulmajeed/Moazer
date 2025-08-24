@@ -5,8 +5,7 @@ from .forms import UserForm, StudentProfileForm, ExpertProfileForm
 from .models import StudentProfile, ExpertProfile
 
 def home_view(request: HttpRequest):
-	return HttpResponse("Hello World!")
-
+    return render(request, "main/index.html")
 
 @login_required
 def profile_view(request):
