@@ -22,9 +22,15 @@ class CustomUser(AbstractUser):
 
 
 class StudentProfile(models.Model):
+    STAGE_CHOICES = (
+       
+        ("middle", "متوسط"),
+        ("high", "ثانوي"),
+        ("university", "جامعي"),
+    )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    stage = models.CharField(max_length=50, blank=True, null=True)
+    stage = models.CharField(max_length=50, choices=STAGE_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -32,10 +38,27 @@ class StudentProfile(models.Model):
 
 
 class ExpertProfile(models.Model):
+    SPECIALTY_CHOICES = (
+        ("academic_guidance", "إرشاد أكاديمي"),
+        ("career_guidance", "توجيه مهني"),
+        ("self_development", "تطوير الذات"),
+        ("cv_writing", "كتابة السيرة الذاتية"),
+        
+    )
+
+    CONSULTATION_CHOICES = (
+        ("career_path", "اختيار المسار المهني"),
+        ("study_path", "اختيار المسار الدراسي"),
+        ("university_choices", "مراجعة خيارات التخصصات الجامعية"),
+        ("general_inquiry", "استفسار عام"),
+        
+    )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     iban = models.CharField(max_length=34, blank=True, null=True)
     hourly_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    specialties = models.CharField(max_length=500, blank=True, null=True) 
+    consultation_types = models.CharField(max_length=500, blank=True, null=True) 
     rating_avg = models.DecimalField(max_digits=3, decimal_places=1, default=0)
     rating_count = models.IntegerField(default=0)
 

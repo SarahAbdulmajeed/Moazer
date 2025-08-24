@@ -5,3 +5,8 @@
   {{ s_form.as_p }}
   <button type="submit">Save</button>
 </form>
+
+<form method="post" action="{% url 'main:delete_profile' %}">
+  {% csrf_token %}
+  <button type="submit" onclick="return confirm('هل أنت متأكد من حذف الحساب؟');">حذف الحساب</button>
+</form>
