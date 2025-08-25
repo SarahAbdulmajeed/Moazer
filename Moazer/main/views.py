@@ -3,9 +3,10 @@ from django.http import HttpRequest, HttpResponse
 from .forms import UserForm, StudentProfileForm, ExpertProfileForm
 from .models import StudentProfile, ExpertProfile
 
+
+
 def home_view(request: HttpRequest):
 	return HttpResponse("Hello World!")
-
 
 
 def profile_view(request):

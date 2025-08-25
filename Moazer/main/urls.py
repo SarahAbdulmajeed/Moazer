@@ -19,4 +19,5 @@ urlpatterns = [
         r, "main/expert_profile.html",
         {"u_form": UserForm(), "e_form": ExpertProfileForm()}
     )),
+    path('test_profiles/', views.test_profiles, name='test_profiles'), 
 ] 

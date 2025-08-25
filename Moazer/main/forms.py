@@ -7,17 +7,30 @@ User = get_user_model()
 GENDER_CHOICES = (
     ("male", "male"),
     ("female", "female"),
-    
 )
+
+
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, required=False)
     password_confirm = forms.CharField(widget=forms.PasswordInput, required=False)
-    dob = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    dob = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=False)
 
     class Meta:
         model = User
-        fields = ["first_name","last_name","email","gender","dob","phone","city","bio","profile_picture","password","password_confirm"]
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "gender",
+            "dob",
+            "phone",
+            "city",
+            "bio",
+            "profile_picture",
+            "password",
+            "password_confirm",
+        ]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -37,7 +50,6 @@ class UserForm(forms.ModelForm):
         return user
 
 
-
 class StudentProfileForm(forms.ModelForm):
     class Meta:
         model = StudentProfile
@@ -45,23 +57,17 @@ class StudentProfileForm(forms.ModelForm):
 
 
 class ExpertProfileForm(forms.ModelForm):
-    
     specialties = forms.MultipleChoiceField(
         choices=ExpertProfile.SPECIALTY_CHOICES,
         widget=forms.CheckboxSelectMultiple,
-        required=False
+        required=False,
     )
     consultation_types = forms.MultipleChoiceField(
         choices=ExpertProfile.CONSULTATION_CHOICES,
         widget=forms.CheckboxSelectMultiple,
-        required=False
+        required=False,
     )
+
     class Meta:
         model = ExpertProfile
-        fields = ["iban","hourly_price","specialties","consultation_types"]
-
-    def clean_specialties(self):
-        return ",".join(self.cleaned_data["specialties"])  
-
-    def clean_consultation_types(self):
-        return ",".join(self.cleaned_data["consultation_types"])
+        fields = ["iban", "hourly_price", "specialties", "consultation_types"]
