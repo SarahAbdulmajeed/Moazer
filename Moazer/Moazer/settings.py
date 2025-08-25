@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'main',
+    "consultations",
+    "ai_interview",
 ]
 
 MIDDLEWARE = [
@@ -121,3 +123,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
+LOGIN_REDIRECT_URL = "/consultations/"     # بعد اللوقن يروح للقائمة
+LOGOUT_REDIRECT_URL = "/accounts/login/"   # بعد اللوغ آوت يرجع للوقن
