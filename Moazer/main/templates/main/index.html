@@ -1,0 +1,64 @@
+{% extends 'main/base.html' %}
+{% block title %} الصفحة الرئيسية {% endblock %}
+
+{% block content %}
+  <!-- KPIs -->
+<div class="bg-white p-4 rounded-3xl">
+  <h2 class="text-xl font-bold mb-4 sm:text-right">ملخص المنصة</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+    <div class="rounded-3xl px-4 py-6 text-center bg-[var(--white-20)] space-y-2 ">
+      <p class="text-sm">إجمالي الاستشارات</p>
+      <p class="text-2xl font-bold">٤٠٠</p>
+    </div>
+    <div class="rounded-3xl px-4 py-6 text-center bg-[var(--white-20)] space-y-2">
+      <p class="text-sm">إجمالي الخبراء المسجلين</p>
+      <p class="text-2xl font-bold">٢٥٠</p>
+    </div>
+    <div class="rounded-3xl px-4 py-6 text-center bg-[var(--white-20)] space-y-2">
+      <p class="text-sm">إجمالي الطلاب</p>
+      <p class="text-2xl font-bold">٣٠٠٠</p>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+    <div class="bg-white shadow rounded-lg p-4 h-64 flex items-center justify-center text-center text-gray-400 text-sm">
+      رسم بياني للنمو في المنصة
+    </div>
+    <div class="bg-white shadow rounded-lg p-4 h-64 flex items-center justify-center text-center text-gray-400 text-sm">
+      أكثر أنواع الاستشارات طلباً
+    </div>
+  </div>
+
+</div>
+
+  <!-- Services -->
+<div class="bg-white p-4 rounded-3xl mt-6">
+  <h2 class="text-xl font-bold mb-4 sm:text-right">الخدمات</h2>
+  <div class="space-y-4">
+    <div class="bg-linear-to-r from-transparent to-[var(--sweet-corn-20)] rounded-3xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+      <div>
+        <h3 class="font-semibold">اكتشف مسارك</h3>
+        <p class="text-sm text-gray-600">خدمة تفاعلية تعتمد على الذكاء الاصطناعي لمساعدتك على مسارك الأنسب بناءً على اهتماماتك وقدراتك.</p>
+      </div>
+      <button class="bg-black text-white px-4 py-2 rounded-3xl w-full md:w-auto">احصل على الخدمة</button>
+    </div>
+
+    <div class="bg-linear-to-r from-transparent to-[var(--sweet-corn-20)] rounded-3xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+      <div>
+        <h3 class="font-semibold">مقابلة افتراضية AI</h3>
+        <p class="text-sm text-gray-600">اختر نفسك في مقابلة تشبه الواقع، يطرح فيها الذكاء الاصطناعي أسئلة مقابلات حقيقية ويحلل إجاباتك.</p>
+      </div>
+      <button class="bg-black text-white px-4 py-2 rounded-3xl w-full md:w-auto">احصل على الخدمة</button>
+    </div>
+
+    <div class="bg-linear-to-r from-transparent to-[var(--sweet-corn-20)] rounded-3xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+      <div>
+        <h3 class="font-semibold">طلب استشارة</h3>
+        <p class="text-sm text-gray-600">احجز جلسة مباشرة مع خبير أكاديمي أو وظيفي للحصول على توجيه يناسب احتياجاتك.</p>
+      </div>
+      <button class="bg-black text-white px-4 py-2 rounded-3xl w-full md:w-auto">احصل على الخدمة</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

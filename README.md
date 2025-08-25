@@ -19,9 +19,9 @@ Moazer enables students to:
 | Name                     |
 |--------------------------|
 | Sarah Abdulmajeed Alsmari|
-| shahad mohammed bafadhel |
-| [Member 3 Name]  |
-| [Member 4 Name]  |
+| Shahad Mohammed Bafadhel |
+| Lama Abdulaziz Alfreah   |
+| Lujain Saleh Alaamri     |   
 
 ---
 
