@@ -6,7 +6,7 @@
 
 
 <div class="p-4 space-y-12">
-    <h2 class="text-2xl font-semibold py-4 mb-4 sm:text-right">الملف الشخصي</h2>
+    <h2 class="text-2xl font-semibold py-4 mb-4 sm:text-right">الملف الشخصي {{ ex.user.username }}</h2>
     
     <div class="glass-card-expert bg-white shadow rounded-2xl p-8 max-w-4xl mx-auto space-y-8">
 
@@ -40,9 +40,22 @@
                 </p>
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">المدينة</p>
+                <p class="font-semibold">{{ expert.created_at|date:"Y-m-d" }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">السعر</p>
+                <p class="font-semibold">{{ ex.consultation_price|default:"0.00" }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">التقييم</p>
+                <p class="font-semibold">{{ ex.rating_avg|default:"0.0" }} ({{ ex.rating_count }} مقيم)</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
                 <p class="text-sm text-gray-500">تاريخ التسجيل</p>
                 <p class="font-semibold">{{ expert.created_at|date:"Y-m-d" }}</p>
             </div>
+            
         </div>
 
         <!-- النبذة -->

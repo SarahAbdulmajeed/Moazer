@@ -11,6 +11,26 @@ from .models import (
     ConsultationStatus,
     ConsultationTypeChoices,
 )
+from django.contrib.auth import get_user_model
+from accounts.models import ExpertProfile, StudentProfile  
+
+def is_student(user) -> bool:
+    """
+    Check if user is a student via Group('Students') OR profile existence.
+    """
+    return (
+        user.groups.filter(name="Students").exists()
+        or StudentProfile.objects.filter(user=user).exists()
+    )
+
+def is_expert(user) -> bool:
+    """
+    Check if user is an expert via Group('Experts') OR profile existence.
+    """
+    return (
+        user.groups.filter(name="Experts").exists()
+        or ExpertProfile.objects.filter(user=user).exists()
+    )
 
 # -------------------------------------------------------------------
 # List consultations for the current user.
@@ -18,18 +38,21 @@ from .models import (
 #   consultations where they are assigned as expert.
 # - Otherwise, show consultations created by the student.
 # -------------------------------------------------------------------
+
 @login_required
 def list_view(request):
-    # TODO: Replace this placeholder check with your real role/permission logic.
-    is_expert = (request.user.username == "expert")
-
-    if is_expert:
+    """
+    List consultations filtered by actual role (student vs expert).
+    """
+    if is_expert(request.user):
         qs = Consultation.objects.filter(expert=request.user).order_by("-updated_at")
+        role_flag = True
     else:
+        # default to student-view (إن لم يكن خبير)
         qs = Consultation.objects.filter(student=request.user).order_by("-updated_at")
+        role_flag = False
 
-    return render(request, "consultations/list.html", {"items": qs, "is_expert": is_expert})
-
+    return render(request, "consultations/list.html", {"items": qs, "is_expert": role_flag})
 
 # -------------------------------------------------------------------
 # Create a consultation for a specific expert (expert_id comes via URL).
@@ -39,6 +62,20 @@ def list_view(request):
 # -------------------------------------------------------------------
 @login_required
 def create_view(request, expert_id: int):
+    """
+    Create a consultation for a specific expert (must be a student).
+    """
+    # Only students can create a consultation
+    if not is_student(request.user):
+        messages.error(request, "فقط الطالب يمكنه طلب استشارة.")
+        return redirect("consultations:list_view")
+
+    # Ensure expert_id belongs to a real expert (by profile/group)
+    expert_profile = ExpertProfile.objects.filter(user_id=expert_id).select_related("user").first()
+    if not expert_profile:
+        messages.error(request, "المستخدم المحدد ليس خبيرًا.")
+        return redirect("consultations:list_view")
+
     if request.method == "POST":
         title = request.POST.get("title", "").strip()
         description = request.POST.get("description", "").strip()
@@ -48,34 +85,23 @@ def create_view(request, expert_id: int):
             messages.error(request, "الرجاء تعبئة الحقول المطلوبة.")
             return redirect("consultations:create_view", expert_id=expert_id)
 
-        # Create the consultation in 'PENDING' state until expert accepts.
         cons = Consultation.objects.create(
             student=request.user,
             expert_id=expert_id,
             title=title,
             description=description,
             type=ctype,
-            status=ConsultationStatus.PENDING,  # awaiting expert decision
+            status=ConsultationStatus.PENDING,
+            price_at_booking=expert_profile.consultation_price,
         )
 
-        # Handle multiple attachments, if any.
         for f in request.FILES.getlist("files"):
-            Attachment.objects.create(
-                consultation=cons,
-                uploaded_by=request.user,
-                file=f,
-            )
+            Attachment.objects.create(consultation=cons, uploaded_by=request.user, file=f)
 
         messages.success(request, "تم إنشاء الاستشارة.")
         return redirect("consultations:detail_view", consultation_id=cons.id)
 
-    # Provide type choices to the template for the select field.
-    return render(
-        request,
-        "consultations/create.html",
-        {"ctype_choices": ConsultationTypeChoices.choices},
-    )
-
+    return render(request, "consultations/create.html", {"ctype_choices": ConsultationTypeChoices.choices})
 
 # -------------------------------------------------------------------
 # Consultation detail + chat thread.
@@ -91,56 +117,61 @@ def create_view(request, expert_id: int):
 def detail_view(request, consultation_id: int):
     c = get_object_or_404(Consultation, pk=consultation_id)
 
-    # Authorization: only participants can access.
+    # Only participants may view
     if c.student_id != request.user.id and c.expert_id != request.user.id:
         messages.error(request, "غير مسموح.")
         return redirect("consultations:list_view")
-    
-    # Convenience flag used by the template and actions below.
-    is_expert = (request.user.id == c.expert_id)
+
+    user_is_expert = (request.user.id == c.expert_id)
+    user_is_student = (request.user.id == c.student_id)
+
+    # Flags for template (avoid string-membership bugs in template)
+    allow_student_end = (user_is_student and c.status == ConsultationStatus.ACTIVE)
+    allow_expert_end = (user_is_expert and c.status in [ConsultationStatus.ACTIVE, ConsultationStatus.PENDING])
+    allow_expert_decide = (user_is_expert and c.status == ConsultationStatus.PENDING)
 
     if request.method == "POST":
         action = request.POST.get("action")
 
-        # Send a chat message (empty messages are ignored).
         if action == "send_message":
             text = request.POST.get("message", "").strip()
             if text:
                 ChatMessage.objects.create(consultation=c, sender=request.user, content=text)
             return redirect("consultations:detail_view", consultation_id=c.id)
 
-        # Student ends → go to rating (star-only page).
         if action == "end_consultation":
-            if request.user.id != c.student_id:
+            if not user_is_student:
                 messages.error(request, "فقط الطالب يمكنه إنهاء الاستشارة.")
                 return redirect("consultations:detail_view", consultation_id=c.id)
             return redirect("consultations:rate_view", consultation_id=c.id)
 
-        # Expert accepts → move to ACTIVE.
-        if action == "expert_accept" and is_expert and c.status == ConsultationStatus.PENDING:
+        if action == "expert_accept" and allow_expert_decide:
             c.status = ConsultationStatus.ACTIVE
             c.save(update_fields=["status"])
             return redirect("consultations:detail_view", consultation_id=c.id)
-        
-        # Expert rejects → move to CLOSED (allowed from NEW/PENDING).
-        if action == "expert_reject" and is_expert and c.status in [ConsultationStatus.PENDING, ConsultationStatus.NEW]:
+
+        if action == "expert_reject" and allow_expert_decide:
             c.status = ConsultationStatus.CLOSED
             c.save(update_fields=["status"])
             return redirect("consultations:detail_view", consultation_id=c.id)
-        
-        # Expert ends immediately (no rating flow for expert).
-        if action == "expert_end" and is_expert:
-                c.status = ConsultationStatus.COMPLETED
-                c.save(update_fields=["status"])
-                messages.success(request, "تم إنهاء الاستشارة من طرف الخبير.")
-                return redirect("consultations:detail_view", consultation_id=c.id)
-        
+
+        if action == "expert_end" and allow_expert_end:
+            c.status = ConsultationStatus.COMPLETED
+            c.save(update_fields=["status"])
+            messages.success(request, "تم إنهاء الاستشارة من طرف الخبير.")
+            return redirect("consultations:detail_view", consultation_id=c.id)
+
     return render(
         request,
         "consultations/detail.html",
-        {"c": c, "is_expert": is_expert},
+        {
+            "c": c,
+            "is_expert": user_is_expert,
+            "allow_student_end": allow_student_end,
+            "allow_expert_end": allow_expert_end,
+            "allow_expert_decide": allow_expert_decide,
+        },
     )
-
 
 # -------------------------------------------------------------------
 # Rating page (stars only, no comment).
@@ -188,21 +219,13 @@ def rate_view(request, consultation_id: int):
     # GET → render the star picker page
     return render(request, "consultations/rate.html", {"c": consultation})
 
-# -------------------------------------------------------------------
-# Temporary experts list (stub) to test the flow without the real experts page.
-# - Lists users whose username contains 'expert'.
-# - Each card links to create_view(expert_id).
-# -------------------------------------------------------------------
-from django.contrib.auth import get_user_model
 @login_required
-def experts_stub_view(request):
+def experts_view(request):
     """
-    صفحة خبراء مؤقتة للاختبار :
-
+    Temporary experts list for testing: list actual experts via ExpertProfile.
     """
-    U = get_user_model()
-    experts = U.objects.filter(username__icontains="expert").order_by("id")
-    return render(request, "consultations/experts_stub.html", {"experts": experts})
+    experts = ExpertProfile.objects.select_related("user").order_by("user__id")
+    return render(request, "consultations/experts_list.html", {"experts": experts})
 
 
 # -------------------------------------------------------------------
@@ -219,3 +242,34 @@ def messages_partial_view(request, consultation_id: int):
 
     html = render_to_string("consultations/messages.html", {"c": c}, request=request)
     return HttpResponse(html)
+
+@login_required
+def overview_view(request):
+    """
+    صفحة مختصرة تعرض:
+      - آخر الاستشارات (5 عناصر)
+      - قائمة خبراء مختصرة (5 عناصر)
+    وتحت كل قسم زر "المزيد".
+    """
+    user_is_expert = is_expert(request.user)
+
+    if user_is_expert:
+        cons_qs = Consultation.objects.filter(expert=request.user)
+    else:
+        cons_qs = Consultation.objects.filter(student=request.user)
+
+    cons_qs = cons_qs.order_by("-updated_at")[:5]
+
+    experts_qs = (
+        ExpertProfile.objects
+        .select_related("user")
+        .prefetch_related("specializations", "consultation_types")
+        .order_by("-rating_avg", "-rating_count", "user__id")[:5]
+    )
+
+    context = {
+        "is_expert": user_is_expert,
+        "consultations_preview": cons_qs,
+        "experts_preview": experts_qs,
+    }
+    return render(request, "consultations/overview.html", context)

@@ -95,7 +95,6 @@ def logout_view(request):
     messages.success(request, "تم تسجيل الخروج بنجاح")
     return redirect("accounts:login_view")  # رجع المستخدم لصفحة تسجيل الدخول
 
-
 # Expert Related 
 
 def experts_view(request):

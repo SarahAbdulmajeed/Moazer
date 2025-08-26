@@ -12,4 +12,5 @@ urlpatterns = [
     path('experts/deactivate/<int:expert_id>', views.deactivate_expert, name='deactivate_expert'),
     path('expert/<int:expert_id>', views.expert_detail_view, name='expert_detail_view'),
     path('logout/', views.logout_view, name='logout_view'),
+    path('experts/<int:user_id>/', views.expert_detail_view, name='expert_detail'),
 ] 

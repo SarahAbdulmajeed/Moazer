@@ -27,6 +27,7 @@ class Consultation(models.Model):
     status  = models.CharField(max_length=20, choices=ConsultationStatus.choices, default=ConsultationStatus.NEW)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    price_at_booking = models.DecimalField(max_digits=8, decimal_places=2, default=0) 
 
 class ChatMessage(models.Model):
     consultation = models.ForeignKey(Consultation, on_delete=models.CASCADE, related_name="messages")
