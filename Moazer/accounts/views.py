@@ -1,7 +1,9 @@
-from django.shortcuts import render , redirect
+from django.shortcuts import render , redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Group
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import StudentProfile, ExpertProfile, Specialization, ConsultationType
 from django.contrib import messages
 
@@ -21,7 +23,6 @@ def login_view(request: HttpRequest):
             messages.error(request, "اسم المستخدم أو كلمة المرور غير صحيحة")
 
     return render(request, "accounts/login.html")
-
 
 def registration_view(request):
     if request.method == "POST":
@@ -71,6 +72,7 @@ def registration_view(request):
                 city=request.POST.get("city"),
                 avatar=request.FILES.get("avatar"),
                 bio=request.POST.get("bio"),
+                is_approved=False
             )
 
             # Connect Relationship
@@ -92,3 +94,45 @@ def logout_view(request):
     logout(request)
     messages.success(request, "تم تسجيل الخروج بنجاح")
     return redirect("accounts:login_view")  # رجع المستخدم لصفحة تسجيل الدخول
+
+
+# Expert Related 
+
+def experts_view(request):
+    approved_experts = ExpertProfile.objects.filter(is_approved=True)
+    pending_experts = None
+    
+    # If admin, bring all inactive experts 
+    if request.user.is_staff or request.user.is_superuser:
+        pending_experts = ExpertProfile.objects.filter(is_approved=False)
+
+    # Filter
+    specialization_id = request.GET.get("specialization")
+    consultation_id = request.GET.get("consultation")
+
+    if specialization_id:
+        approved_experts = approved_experts.filter(specializations__id=specialization_id)
+    if consultation_id:
+        approved_experts = approved_experts.filter(consultation_types__id=consultation_id)
+
+
+
+    return render(request, "accounts/experts.html", {"approved_experts": approved_experts,"pending_experts": pending_experts,"specializations": Specialization.objects.all(), "consultation_types": ConsultationType.objects.all(), "selected_spec": specialization_id, "selected_consult": consultation_id,})
+
+@staff_member_required
+def approve_expert(request, expert_id):
+    expert = get_object_or_404(ExpertProfile, id=expert_id)
+    expert.is_approved = True
+    expert.save()
+    return redirect("accounts:experts_view")
+
+@staff_member_required
+def deactivate_expert(request, expert_id):
+    expert = get_object_or_404(ExpertProfile, id=expert_id)
+    expert.is_approved = False
+    expert.save()
+    return redirect("accounts:experts_view")
+
+def expert_detail_view(request, expert_id):
+    expert = get_object_or_404(ExpertProfile, id=expert_id, is_approved=True)
+    return render(request, "accounts/expert_detail.html", {"expert": expert})

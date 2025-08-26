@@ -1,0 +1,74 @@
+{% extends 'main/base.html' %}
+{% block title %} قائمة الخبراء {% endblock %}
+
+{% block content %}
+<div class="p-6 space-y-12">
+    <!-- Only Admin: Inactive Experts List-->
+    {% if user.is_staff %}
+    <section>
+        <h2 class="text-2xl font-semibold py-4 mb-4 sm:text-right">الخبراء بانتظار التفعيل</h2>
+        {% if pending_experts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for expert in pending_experts %}
+            {% include "accounts/components/expert_card.html" %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">لا يوجد خبراء بانتظار التفعيل</p>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    <!-- Active Experts -->
+    {% if not user.is_authenticated or user.is_staff or user.groups.all.0.name == "Students" %}
+    <div class="flex md:flex-row flex-col">
+        <h2 class="text-2xl font-semibold py-4 mb-4 sm:text-right">الخبراء</h2>
+        <!-- Filter -->
+        <div class="p-4 w-full justify-items-end">
+            <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
+                <!-- Specialization -->
+                <select name="specialization" class="border rounded-md p-1.5 text-sm">
+                    <option value="">التخصص: الكل</option>
+                    {% for spec in specializations %}
+                        <option value="{{ spec.id }}" {% if selected_spec == spec.id|stringformat:"s" %}selected{% endif %}>{{ spec.name }}</option>
+                    {% endfor %}
+                </select>
+                <!-- Consultation Type -->
+                <select name="consultation" class="border rounded-md p-1.5 text-sm">
+                    <option value="">الاستشارة: الكل</option>
+                    {% for consult in consultation_types %}
+                    <option value="{{ consult.id }}" {% if selected_consult == consult.id|stringformat:"s" %}selected{% endif %}>{{ consult.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Filter Buttons -->
+                <button type="submit" title="تطبيق الفلترة" class="bg-black text-white px-3 py-1.5 rounded-md flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </button>
+                <a href="{% url 'accounts:experts_view' %}" title="إعادة التعيين" class="bg-black text-white px-3 py-1.5 rounded-md flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                </a>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Experts List -->
+    <section>
+        {% if approved_experts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for expert in approved_experts %}
+            {% include "accounts/components/expert_card.html" %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">لا يوجد خبراء معتمدين حالياً</p>
+        {% endif %}
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
