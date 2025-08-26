@@ -1,0 +1,157 @@
+{% extends 'main/base.html' %}
+{% block title %} تسجيل مستخدم جديد {% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[80vh] p-4">
+  <div class="bg-white/90 backdrop-blur-md shadow-lg rounded-2xl w-full max-w-4xl p-8 glass-card">
+    <h2 class="text-2xl font-bold text-center mb-8">تسجيل مستخدم جديد</h2>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+      {% csrf_token %}
+
+      <!-- Account Info Section -->
+      <div class="space-y-4 glass-card rounded-2xl p-4">
+        <h3 class="text-lg font-semibold pb-2">بيانات الحساب</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium">اسم المستخدم</label>
+            <input required type="text" name="username" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">البريد الإلكتروني</label>
+            <input required type="email" name="email" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">كلمة المرور</label>
+            <input required type="password" name="password1" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">تأكيد كلمة المرور</label>
+            <input required type="password" name="password2" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Information Section -->
+      <div class="space-y-4 glass-card rounded-2xl p-4">
+        <h3 class="text-lg font-semibold pb-2">المعلومات الشخصية</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium">الاسم الأول</label>
+            <input required type="text" name="first_name" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">اسم العائلة</label>
+            <input required type="text" name="last_name" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">تاريخ الميلاد</label>
+            <input required type="date" name="birth_date" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">الجنس</label>
+            <select required name="gender" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">رقم الجوال</label>
+            <input required type="text" name="phone" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">المدينة</label>
+            <input required type="text" name="city" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block mb-2 text-sm font-medium" for="avatar">الصورة الشخصية</label>
+            <input name="avatar" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white " aria-describedby="avatar_help" id="avatar" type="file">
+        </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium">نبذة</label>
+            <textarea name="bio" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Type Section -->
+      <div class="space-y-4 glass-card rounded-2xl p-4">
+        <h3 class="text-lg font-semibold pb-2">نوع المستخدم</h3>
+        <div>
+          <label class="block text-sm font-medium">نوع المستخدم</label>
+          <select id="user-type" name="user_type" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2">
+            <option value="">اختر نوع المستخدم</option>
+            <option value="student">طالب</option>
+            <option value="expert">خبير</option>
+          </select>
+        </div>
+
+        <!-- Student Fields -->
+        <div id="student-fields" class="hidden">
+          <label class="block text-sm font-medium">المرحلة الدراسية</label>
+          <select name="study_stage" class="w-full border rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2">
+            <option value="middle">المتوسطة</option>
+            <option value="high">الثانوية</option>
+            <option value="diploma">الدبلوم</option>
+            <option value="bachelor">البكالوريوس</option>
+          </select>
+        </div>
+
+        <!-- Expert Fields -->
+        <div id="expert-fields" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium">التخصصات</label>
+            <div class="space-y-1 max-h-40 overflow-y-auto rounded-lg border border-gray-300 p-2 bg-white">
+              {% for spec in specializations %}
+                <label class="flex items-center space-x-2">
+                  <input type="checkbox" name="specializations" value="{{ spec.id }}" class="border border-black">
+                  <span>{{ spec.name }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">أنواع الاستشارات</label>
+            <div class="space-y-1 max-h-40 overflow-y-auto rounded-lg border border-gray-300 p-2 bg-white">
+              {% for consult in consultation_types %}
+                <label class="flex items-center space-x-2">
+                  <input type="checkbox" name="consultation_types" value="{{ consult.id }}" class="border border-black">
+                  <span>{{ consult.name }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registration Button -->
+      <button type="submit"
+              class="w-full bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white py-3 rounded-lg shadow mt-4 font-medium">
+        تسجيل
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const userType = document.getElementById("user-type");
+  const studentFields = document.getElementById("student-fields");
+  const expertFields = document.getElementById("expert-fields");
+
+  function toggleFields() {
+    if (userType.value === "student") {
+      studentFields.classList.remove("hidden");
+      expertFields.classList.add("hidden");
+    } else if (userType.value === "expert") {
+      expertFields.classList.remove("hidden");
+      studentFields.classList.add("hidden");
+    } else {
+      studentFields.classList.add("hidden");
+      expertFields.classList.add("hidden");
+    }
+  }
+
+  userType.addEventListener("change", toggleFields);
+  document.addEventListener("DOMContentLoaded", toggleFields);
+</script>
+{% endblock %}

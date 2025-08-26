@@ -6,5 +6,5 @@ app_name = "main"
 urlpatterns = [ 
 		#path(URL Route*, View*)
     path('', views.home_view, name='home_view'),
-    path('profile/', views.profile_view, name='profile'), 
+    path('about/', views.about_us_view, name='about_us_view'), 
 ] 

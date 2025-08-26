@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'accounts',
     "consultations",
     "ai_interview",
 ]
@@ -128,4 +129,3 @@ MEDIA_ROOT = BASE_DIR / "media"
 TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
 LOGIN_REDIRECT_URL = "/consultations/"     # بعد اللوقن يروح للقائمة
 LOGOUT_REDIRECT_URL = "/accounts/login/"   # بعد اللوغ آوت يرجع للوقن
-AUTH_USER_MODEL = "main.CustomUser"
