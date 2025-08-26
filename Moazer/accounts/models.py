@@ -43,7 +43,7 @@ class ExpertProfile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', default="images/default.png")
     bio = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    is_approved = models.BooleanField(default=False)
     # Relationship
     specializations = models.ManyToManyField(Specialization, blank=True)
     consultation_types = models.ManyToManyField(ConsultationType, blank=True)

@@ -8,19 +8,51 @@
     <!-- KPIs -->
   <div class=" p-4 rounded-2xl glass-card">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      {% if not user.is_authenticated %}
       <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
         <p class="text-sm">إجمالي الاستشارات</p>
         <p class="text-2xl font-bold">٤٠٠</p>
       </div>
       <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">إجمالي الخبراء المسجلين</p>
-        <p class="text-2xl font-bold">٢٥٠</p>
+        <p class="text-sm">إجمالي الخبراء</p>
+        <p class="text-2xl font-bold">{{ experts_count }}</p>
       </div>
       <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
         <p class="text-sm">إجمالي الطلاب</p>
+        <p class="text-2xl font-bold">{{ students_count }}</p>
+      </div>
+      {% endif %}
+      {% if user.groups.all.0.name == "Students" %}
+      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
+        <p class="text-sm">اجمالي اختبارات "اكتشف مسارك"</p>
+        <p class="text-2xl font-bold">٤٠٠</p>
+      </div>
+      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
+        <p class="text-sm">اجمالي المقابلات الافتراضية AI</p>
+        <p class="text-2xl font-bold">٢٥٠</p>
+      </div>
+      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
+        <p class="text-sm">اجمالي الاستشارات</p>
         <p class="text-2xl font-bold">٣٠٠٠</p>
       </div>
+      {% endif %}
+      {% if user.groups.all.0.name == "Experts" %}
+      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
+        <p class="text-sm">إجمالي الاستشارات</p>
+        <p class="text-2xl font-bold">٤٠٠</p>
+      </div>
+      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
+        <p class="text-sm">إجمالي الاستشارات النشطة</p>
+        <p class="text-2xl font-bold">٢٥٠</p>
+      </div>
+      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
+        <p class="text-sm">إجمالي الاستشارات المكتملة</p>
+        <p class="text-2xl font-bold">٣٠٠٠</p>
+      </div>
+      {% endif %}
     </div>
+
+
 
     <!-- Charts -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">

@@ -1,40 +1,102 @@
-{% extends "main/base.html" %}
-{% block title %}الملف الشخصي للخبير{% endblock %}
+{% extends 'main/base.html' %}
+{% block title %} {{ expert.user.get_full_name }} {% endblock %}
+
 {% block content %}
-<h3 class="mb-4">الملف الشخصي: {{ ex.user.username }}</h3>
 
-<div class="grid gap-3">
-  <div class="border rounded p-3 bg-white/80">
-    <div>المدينة: {{ ex.city|default:"—" }}</div>
-    <div>الهاتف: {{ ex.phone|default:"—" }}</div>
-    <div>الايميل: {{ ex.user.email|default:"—" }}</div>
-    <div>السعر: {{ ex.consultation_price|default:"0.00" }} ر.س</div>
-    <div>التقييم: {{ ex.rating_avg|default:"0.0" }} ({{ ex.rating_count }} مقيم)</div>
 
-    <div class="mt-2">التخصصات:
-      {% for s in ex.specializations.all %}
-        <span class="inline-block px-2 py-0.5 border rounded ms-1">{{ s.name }}</span>
-      {% empty %} — {% endfor %}
+
+<div class="p-4 space-y-12">
+    <h2 class="text-2xl font-semibold py-4 mb-4 sm:text-right">الملف الشخصي {{ ex.user.username }}</h2>
+    
+    <div class="glass-card-expert bg-white shadow rounded-2xl p-8 max-w-4xl mx-auto space-y-8">
+
+        <!-- صورة واسم -->
+        <div class="flex flex-col items-center text-center">
+            <div class="w-28 h-28 rounded-full overflow-hidden bg-gray-200 shadow">
+                <img src="{{ expert.avatar.url }}" alt="avatar" class="object-cover w-full h-full">
+            </div>
+            <h2 class="text-2xl font-bold mt-4 text-gray-700">{{ expert.user.get_full_name }}</h2>
+            <p class="text-gray-500">{{ expert.city }}</p>
+        </div>
+
+        <!-- معلومات أساسية -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">البريد الإلكتروني</p>
+                <p class="font-semibold">{{ expert.user.email }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">رقم الجوال</p>
+                <p class="font-semibold">{{ expert.phone }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">تاريخ الميلاد</p>
+                <p class="font-semibold">{{ expert.birth_date|date:"Y-m-d" }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">الجنس</p>
+                <p class="font-semibold">
+                    {% if expert.gender == "male" %} ذكر {% else %} أنثى {% endif %}
+                </p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">المدينة</p>
+                <p class="font-semibold">{{ expert.created_at|date:"Y-m-d" }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">السعر</p>
+                <p class="font-semibold">{{ ex.consultation_price|default:"0.00" }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">التقييم</p>
+                <p class="font-semibold">{{ ex.rating_avg|default:"0.0" }} ({{ ex.rating_count }} مقيم)</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-500">تاريخ التسجيل</p>
+                <p class="font-semibold">{{ expert.created_at|date:"Y-m-d" }}</p>
+            </div>
+            
+        </div>
+
+        <!-- النبذة -->
+        {% if expert.bio %}
+        <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold mb-2 text-gray-700">نبذة</h3>
+            <p class="text-gray-700 leading-relaxed">{{ expert.bio }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Specialization -->
+        <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold mb-2 text-gray-700">التخصصات</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for spec in expert.specializations.all %}
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">{{ spec.name }}</span>
+                {% empty %}
+                <span class="text-sm text-gray-400">لا يوجد تخصصات</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Consultation Types -->
+        <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold mb-2 text-gray-700">أنواع الاستشارات</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for consult in expert.consultation_types.all %}
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm">{{ consult.name }}</span>
+                {% empty %}
+                <span class="text-sm text-gray-400">لا يوجد استشارات</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- الأزرار -->
+        <div class="flex gap-4 justify-center">
+            {% if user.groups.all.0.name == "Students" %}<a href="#"
+                class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-6 py-2 rounded-lg shadow">حجز
+                استشارة</a>{% endif %}
+        </div>
+
     </div>
-
-    <div class="mt-2">النبذة:
-        {% for s in ex.specializations.all %}
-          <span class="inline-block px-2 py-0.5 border rounded ms-1">{{ ex.bio }}</span>
-        {% empty %} — {% endfor %}
-    </div>
-
-    <div class="mt-2">أنواع الاستشارات:
-      {% for t in ex.consultation_types.all %}
-        <span class="inline-block px-2 py-0.5 border rounded ms-1">{{ t.name }}</span>
-      {% empty %} — {% endfor %}
-    </div>
-
-    <div class="mt-3">
-      <a class="inline-block px-3 py-1 rounded bg-black text-white"
-         href="{% url 'consultations:create_view' expert_id=ex.user.id %}">
-        طلب خدمة استشارة
-      </a>
-    </div>
-  </div>
 </div>
 {% endblock %}
