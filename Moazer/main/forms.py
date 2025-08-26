@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from .models import StudentProfile, ExpertProfile
 
+
 User = get_user_model()
 
 GENDER_CHOICES = (
@@ -71,3 +72,5 @@ class ExpertProfileForm(forms.ModelForm):
     class Meta:
         model = ExpertProfile
         fields = ["iban", "hourly_price", "specialties", "consultation_types"]
+
+

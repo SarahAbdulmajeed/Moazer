@@ -69,3 +69,4 @@ class ExpertProfile(models.Model):
     class Meta:
         verbose_name = "Expert Profile"
         verbose_name_plural = "Expert Profiles"
+

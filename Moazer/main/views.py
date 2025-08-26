@@ -52,3 +52,4 @@ def delete_profile(request):
         user.delete()   
         return redirect('main:home_view') 
     return redirect('main:profile')
+
