@@ -1,0 +1,148 @@
+{% extends 'main/base.html' %}
+{% block title %} من نحن {% endblock %}
+
+
+{% block content %}
+  <!-- About Us -->
+<div class="bg-white">
+  <section class="min-h-screen bg-white" dir="rtl">
+    <!-- Hero -->
+    <div class="mx-auto px-4 py-12 text-center bg-gradient-to-b from-gray-100 to-transparent blur-0">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
+        مؤازر — منصتك الذكية لاكتشاف مستقبلك
+      </h1>
+      <p class="text-gray-600 w-[75%] justify-self-center">
+        نساعد طلاب الثانوية والجامعة على اكتشاف مسارهم الدراسي أو المهني، التدريب على المقابلات الافتراضية،
+        وحجز جلسات مع خبراء موثوقين. تجربة عربية بسيطة وواضحة.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3 place-content-center">
+        <a href="/discover" class="inline-flex items-center rounded-lg bg-[var(--malibu-80)] text-white px-4 py-2 text-sm">
+          ابدأ اكتشاف مسارك
+        </a>
+        <a href="/contact" class="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700">
+          تواصل معنا
+        </a>
+      </div>
+    </div>
+
+    <!-- Mission / Vision -->
+    <div class="mx-auto max-w-6xl px-4 py-8 grid md:grid-cols-2 gap-6">
+      <div class="p-6">
+        <h2 class="text-xl font-bold mb-2">رسالتنا</h2>
+        <p class="text-gray-600">تمكين الطلاب من اتخاذ قرارات واعية حول تخصصاتهم ومهنهم بثقة.</p>
+      </div>
+      <div class="p-6">
+        <h2 class="text-xl font-bold mb-2">رؤيتنا</h2>
+        <p class="text-gray-600">أن نكون مرجع التوجيه الطلابي الأول عربيًا، حيث يلتقي الذكاء الاصطناعي بالخبرة البشرية.</p>
+      </div>
+    </div>
+
+    <!-- Why Moazer -->
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <h3 class="text-2xl font-bold mb-4">لماذا مؤازر؟</h3>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">توجيه شخصي بالذكاء الاصطناعي</div>
+          <p class="text-gray-600 text-sm">محادثة ذكية تفهم اهتماماتك وتقترح مسارات تناسبك.</p>
+        </div>
+        <div class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">مقابلات افتراضية واقعية</div>
+          <p class="text-gray-600 text-sm">أسئلة تحاكي الواقع مع تقرير فوري لنقاط القوة وفرص التحسين.</p>
+        </div>
+        <div class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">خبراء موثوقون</div>
+          <p class="text-gray-600 text-sm">مستشارون أكاديميون وموارد بشرية بملفات علنية وتقييمات.</p>
+        </div>
+        <div class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">تجربة عربية أولًا</div>
+          <p class="text-gray-600 text-sm">واجهة سهلة وتقارير مختصرة ومباشرة بالعربية.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <h3 class="text-2xl font-bold mb-4">كيف نعمل؟</h3>
+      <ol class="grid md:grid-cols-4 gap-4 list-decimal list-inside">
+        <li class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">تحدث مع الذكاء الاصطناعي</div>
+          <p class="text-gray-600 text-sm">أجب عن أسئلة قصيرة حول اهتماماتك ونقاط قوتك.</p>
+        </li>
+        <li class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">توصية واضحة</div>
+          <p class="text-gray-600 text-sm">مسار دراسي/مهني مناسب + تحليل موجز.</p>
+        </li>
+        <li class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">درّب نفسك</div>
+          <p class="text-gray-600 text-sm">مقابلة افتراضية بتقييم فوري.</p>
+        </li>
+        <li class="rounded-xl border p-5">
+          <div class="font-semibold mb-1">استشارة بشرية</div>
+          <p class="text-gray-600 text-sm">احجز خبيرًا لتعزيز قرارك واستعدادك.</p>
+        </li>
+      </ol>
+    </div>
+
+    <!-- Who it's for -->
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <h3 class="text-2xl font-bold mb-4">لمن هذه المنصة؟</h3>
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="rounded-xl border p-5"><div class="font-semibold mb-1">طلاب الثانوية</div><p class="text-gray-600 text-sm">لاختيار المسار الدراسي بثقة.</p></div>
+        <div class="rounded-xl border p-5"><div class="font-semibold mb-1">طلاب الجامعة</div><p class="text-gray-600 text-sm">لتأكيد التخصص وفرص مهنية مناسبة.</p></div>
+        <div class="rounded-xl border p-5"><div class="font-semibold mb-1">أولياء الأمور</div><p class="text-gray-600 text-sm">اشتراك أسري ومتابعة التقدم.</p></div>
+        <div class="rounded-xl border p-5"><div class="font-semibold mb-1">المدارس والجامعات</div><p class="text-gray-600 text-sm">تقارير عامة للإرشاد الطلابي.</p></div>
+      </div>
+    </div>
+
+    <!-- Numbers -->
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <h3 class="text-2xl font-bold mb-4">أرقام سريعة</h3>
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="rounded-xl border p-6 text-center">
+          <div class="text-3xl font-extrabold text-gray-900">3,200+</div>
+          <div class="text-gray-600 text-sm">جلسة توجيه</div>
+        </div>
+        <div class="rounded-xl border p-6 text-center">
+          <div class="text-3xl font-extrabold text-gray-900">180+</div>
+          <div class="text-gray-600 text-sm">خبير معتمد</div>
+        </div>
+        <div class="rounded-xl border p-6 text-center">
+          <div class="text-3xl font-extrabold text-gray-900">92%</div>
+          <div class="text-gray-600 text-sm">رضا المستخدمين</div>
+        </div>
+      </div>
+    </div>    
+
+    <!-- FAQ -->
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <h3 class="text-2xl font-bold mb-4">أسئلة شائعة</h3>
+      <div class="space-y-4">
+        <details class="rounded-xl border p-4">
+          <summary class="font-semibold cursor-pointer">هل الخدمة مجانية؟</summary>
+          <p class="text-gray-600 mt-2">يمكنك تجربة الذكاء الاصطناعي مجانًا بحد استخدام يومي. الجلسات مع الخبراء مدفوعة.</p>
+        </details>
+        <details class="rounded-xl border p-4">
+          <summary class="font-semibold cursor-pointer">هل التوصيات أكيدة؟</summary>
+          <p class="text-gray-600 mt-2">هي توصيات مبنية على إجاباتك. القرار النهائي لك، ويمكنك دعم قرارك بجلسة خبير.</p>
+        </details>
+        <details class="rounded-xl border p-4">
+          <summary class="font-semibold cursor-pointer">هل يمكنني إعادة الاختبار؟</summary>
+          <p class="text-gray-600 mt-2">نعم، ويمكنك مقارنة نتائجك السابقة من لوحة التحكم.</p>
+        </details>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="mx-auto max-w-6xl px-4 py-12">
+      <div class="rounded-2xl border p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h3 class="text-xl font-bold mb-1">جاهز تبدأ؟</h3>
+          <p class="text-gray-600">ابدأ باختبار قصير مع الذكاء الاصطناعي واقترب من قرارك بثقة.</p>
+        </div>
+        <a href="/discover" class="inline-flex items-center rounded-lg bg-gray-900 text-white px-4 py-2 text-sm">ابدأ الآن</a>
+      </div>
+    </div>
+</section>
+</div>
+
+{% endblock %}

@@ -1,17 +1,25 @@
-from django.shortcuts import render , redirect
+from django.shortcuts import render, redirect
+from .models import ContactMessage
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import ContactForm
 
-# Create your views here.
 def contact_view(request):
     if request.method == "POST":
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "تم إرسال رسالتك بنجاح")
-            return redirect("contact:contact")
-        else:
-            messages.error(request, "يرجى التحقق من صحة البيانات")
-    else:
-        form = ContactForm()
-    return render(request, "contact/contact.html", {"form": form})
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        ContactMessage.objects.create(
+            name=name,
+            email=email,
+            message=message
+        )
+        messages.success(request, "تم إرسال رسالتك بنجاح!")
+        return redirect("contact:contact") 
+
+    user = request.user if request.user.is_authenticated else None
+
+    context = {
+        "user": user
+    }
+    return render(request, "contact/contact.html", context)

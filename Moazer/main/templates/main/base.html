@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مؤازر | {% block title %}{% endblock %}</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+  <!-- Flowbite -->
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+  <!-- Finisher -->
+<script src="{% static 'js/finisher-header.es5.min.js' %}" defer></script>
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+      new FinisherHeader({
+         count: 8,
+         size: { min: 1300, max: 1500, pulse: 0 },
+         speed: { x:{min:0.6,max:3}, y:{min:0.6,max:3} },
+         colors: { background:"#ffffff", particles:["#92c4ea","#f8dc85","#8dcfbb"] },
+         blending: "lighten",
+         opacity: { center: 0.6, edge: 0 },
+         skew: 0,
+         shapes: ["c"]
+      });
+   });
+</script>
+<style>
+   :root { 
+      /* Monte Carlo */
+      --monte-carlo-700: #192e21; /* 700 */
+      --monte-carlo-600: #233b2e; /* 600 */
+      --monte-carlo-400: #3a5b4c; /* 400 */
+      --monte-carlo-100: #588674; /* 100 */
+      --monte-carlo-70: #75af9c; /* 70 */
+      --monte-carlo-50: #8CCFBB; /* 50 */
+      --monte-carlo-40: #acdccf; /* 40 */
+      --monte-carlo-30: #bfe4dd; /* 30 */
+      --monte-carlo-20: #d0ebe8; /* 20 */
+      --monte-carlo-10: #edf7f6; /* 10 */
+
+      /* Malibu */
+      --malibu-800: #061b2d; /* 800 */
+      --malibu-600: #1c374d; /* 600 */
+      --malibu-400: #32546f; /* 400 */
+      --malibu-200: #4c7596; /* 200 */
+      --malibu-80: #699ac2; /* 80 */
+      --malibu-50: #8EC9F9; /* 50 */
+      --malibu-40: #9fd1f9; /* 40 */
+      --malibu-30: #b8ddfb; /* 30 */
+      --malibu-20: #d7ecfc; /* 20 */
+      --malibu-10: #f9fcfe; /* 10 */
+
+      /* Sweet Corn */
+      --sweet-corn-700: #371f0c; /* 700 */
+      --sweet-corn-600: #3f2912; /* 600 */
+      --sweet-corn-500: #574021; /* 500 */
+      --sweet-corn-300: #796036; /* 300 */
+      --sweet-corn-90: #a0844e; /* 90 */
+      --sweet-corn-70: #c5a866; /* 70 */
+      --sweet-corn-40: #e5c779; /* 40 */
+      --sweet-corn-30: #FADC87; /* 30 */
+      --sweet-corn-20: #faefb3; /* 20 */
+      --sweet-corn-10: #fcfbdf; /* 10 */
+
+      /* Black */
+      --black-1000: #000000; /* 1000 */
+      --black-800: #151515; /* 800 */
+      --black-600: #2f2f2f; /* 600 */
+      --black-400: #4b4b4b; /* 400 */
+      --black-200: #696969; /* 200 */
+      --black-90: #888888; /* 90 */
+      --black-70: #a5a5a5; /* 70 */
+      --black-50: #c1c1c1; /* 50 */
+      --black-30: #d9d9d9; /* 30 */
+      --black-20: #eeeeee; /* 20 */
+
+      /* White */
+      --white-700: #282828; /* 700 */
+      --white-600: #2d2d2d; /* 600 */
+      --white-500: #3b3b3b; /* 500 */
+      --white-400: #515151; /* 400 */
+      --white-200: #6c6c6c; /* 200 */
+      --white-90: #8a8a8a; /* 90 */
+      --white-80: #787878;  /* 80 */
+      --white-70: #a8a8a8; /* 70 */
+      --white-50: #c5c5c5; /* 50 */
+      --white-40: #f2f2f2; /* 40 */
+      --white-30: #dedede; /* 30 */
+      --white-20: #f6f6f6; /* 20 */
+      --white-10: #f7f7f7; /* 10 */
+      --white-0: #FFFFFF; /* 0 */
+   }
+
+   .glass-background {
+      background: rgba( 255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+   }
+      
+   .glass-card {
+      background: rgba( 255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+   }
+   .glass-nav-item, .nav-item:hover {
+      background: rgba( 255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+   }
+   .finisher-header{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+   }
+   html, body { margin: 0; }
+
+
+
+  </style>
+</head>
+<body class="font-[Cairo] h-dvh overflow-x-hidden">
+   <div class="finisher-header" aria-hidden="true"></div>
+   <div class="flex h-full glass-background">
+      
+      <div class="w-64 h-full">
+         <aside id="sidebar-multi-level-sidebar" class="w-64 h-full" aria-label="Sidebar" >
+            <div class="px-3 py-4 overflow-y-auto flex flex-col justify-between h-full ">
+               <ul class="space-y-2 font-medium">
+                  <div class="grid place-items-center h-24">
+                     <img src="{% static 'images/moazer_logo.png' %}" alt="Moazer Logo" width="150">
+                  </div>
+                  <!-- 
+                  <li>
+                     <a href="{% url 'main:about_us_view' %}" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold {% if request.resolver_match.url_name == 'about_us_view' %} font-semibold glass-nav-item {% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                        </svg>
+                        <span class="ms-3">من نحن</span>
+                     </a>
+                  </li>
+                  <li>-->
+                     <a href="{% url 'main:home_view' %}" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold  {% if request.resolver_match.url_name == 'home_view' %} font-semibold glass-nav-item {% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                        </svg>
+                        <span class="ms-3">الرئيسية</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+                        </svg>
+                        <span class="ms-3">اكتشف مسارك</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                        </svg>
+                        <span class="ms-3">مقابلة AI افتراضية</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+                        </svg>
+                        <span class="ms-3">الاستشارات</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{% url 'contact:contact' %}"  class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                        </svg>
+                        <span class="ms-3">تواصل معنا</span>
+                     </a>
+                  </li>
+               </ul>
+               <ul class="space-y-2 font-medium">
+                  <li>
+                     <a href="{% url 'accounts:login_view'%}" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold {% if request.resolver_match.url_name == 'login_view' %} font-semibold glass-nav-item {% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                        </svg>
+                        <span class="ms-3">تسجيل دخول</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{% url 'accounts:registration_view'%}" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold {% if request.resolver_match.url_name == 'registration_view' %} font-semibold glass-nav-item {% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                        </svg>
+                        <span class="ms-3">مستخدم جديد</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{% url 'accounts:profile' %}" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        <span class="ms-3">الملف الشخصي</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{% url 'accounts:logout_view'%}" class="flex items-center p-2 text-[var(--white-700)] rounded-lg group nav-item hover:font-semibold {% if request.resolver_match.url_name == 'logout_view' %} font-semibold glass-nav-item {% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                        </svg>
+                        <span class="ms-3">تسجيل الخروج</span>
+                     </a>
+                  </li>
+               </ul>
+            </div>
+         </aside>
+      </div>
+
+      <div class="w-full h-full overflow-y-auto">
+      {% block content %} {% endblock %}
+      </div>
+   </div>
+
+</body>
+</html>
