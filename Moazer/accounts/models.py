@@ -48,3 +48,6 @@ class ExpertProfile(models.Model):
     specializations = models.ManyToManyField(Specialization, blank=True)
     consultation_types = models.ManyToManyField(ConsultationType, blank=True)
 
+    consultation_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)  # SAR
+    rating_count = models.PositiveIntegerField(default=0)
+    rating_avg = models.DecimalField(max_digits=3, decimal_places=1, default=0)  # e.g. 4.5

@@ -1,4 +1,4 @@
-from django.shortcuts import render , redirect
+from django.shortcuts import render , redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
@@ -92,3 +92,8 @@ def logout_view(request):
     logout(request)
     messages.success(request, "تم تسجيل الخروج بنجاح")
     return redirect("accounts:login_view")  # رجع المستخدم لصفحة تسجيل الدخول
+
+def expert_detail_view(request, user_id: int):
+    ex = get_object_or_404(ExpertProfile.objects.select_related("user").prefetch_related("specializations", "consultation_types"),
+                           user_id=user_id)
+    return render(request, "accounts/expert_detail.html", {"ex": ex})

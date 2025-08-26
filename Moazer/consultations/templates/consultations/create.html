@@ -1,34 +1,34 @@
-{% extends "base.html" %}
+{% extends 'main/base.html' %}
 {% block title %}طلب استشارة{% endblock %}
 {% block content %}
-<h3 class="mb-3">طلب استشارة</h3>
+<h3>طلب استشارة</h3>
 
-<form method="post" enctype="multipart/form-data" class="card p-3">
+<form method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  <div class="mb-3">
-    <label class="form-label">عنوان الاستشارة</label>
-    <input type="text" name="title" class="form-control" required>
+  <div>
+    <label>عنوان الاستشارة</label>
+    <input type="text" name="title" required>
   </div>
 
-  <div class="mb-3">
-    <label class="form-label">نبذة عن الاستشارة</label>
-    <textarea name="description" class="form-control" rows="4" required></textarea>
+  <div>
+    <label>نبذة عن الاستشارة</label>
+    <textarea name="description" rows="4" required></textarea>
   </div>
 
-  <div class="mb-3">
-    <label class="form-label">نوع الاستشارة</label>
-    <select name="type" class="form-select" required>
+  <div>
+    <label>نوع الاستشارة</label>
+    <select name="type" required>
       {% for value, label in ctype_choices %}
         <option value="{{ value }}">{{ label }}</option>
       {% endfor %}
     </select>
   </div>
 
-  <div class="mb-3">
-    <label class="form-label">المرفقات (يمكن اختيار عدة ملفات)</label>
-    <input type="file" name="files" class="form-control" multiple>
+  <div>
+    <label>المرفقات (يمكن اختيار عدة ملفات)</label>
+    <input type="file" name="files" multiple>
   </div>
 
-  <button class="btn btn-dark w-100" type="submit">إرسال</button>
+  <button type="submit">إرسال</button>
 </form>
 {% endblock %}
