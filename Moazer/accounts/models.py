@@ -43,10 +43,15 @@ class ExpertProfile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', default="images/default.png")
     bio = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    is_approved = models.BooleanField(default=False)
     # Relationship
     specializations = models.ManyToManyField(Specialization, blank=True)
     consultation_types = models.ManyToManyField(ConsultationType, blank=True)
 
-    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
     iban_number = models.CharField(max_length=34, null=True, blank=True)
+    
+    consultation_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)  # SAR
+    rating_count = models.PositiveIntegerField(default=0)
+    rating_avg = models.DecimalField(max_digits=3, decimal_places=1, default=0)  # e.g. 4.5
+
