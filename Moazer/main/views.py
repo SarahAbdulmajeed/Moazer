@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group
 
 
 def home_view(request: HttpRequest):
+    for name in ["Students", "Experts", "Parents", "School Admin", "Visitors"]:
+     Group.objects.get_or_create(name=name)
 
     # Students Counts 
     students_count = Group.objects.get(name="Students").user_set.count()

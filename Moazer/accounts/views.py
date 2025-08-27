@@ -141,7 +141,7 @@ def profile_view(request):
 
         profile.save()
         messages.success(request, "تم حفظ التغييرات بنجاح")
-        return redirect("account:profile")
+        return redirect("accounts:profile")
 
     context = {
         "profile": profile,
@@ -159,7 +159,7 @@ def delete_profile(request):
         user.delete()
         messages.success(request, "تم حذف الحساب بنجاح")
         return redirect('main:home_view')
-    return redirect('account:profile_view')
+    return redirect('accounts:profile_view')
 
 
 # Expert Related 
