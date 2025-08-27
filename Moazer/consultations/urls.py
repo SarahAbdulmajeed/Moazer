@@ -5,7 +5,6 @@ app_name = "consultations"
 
 urlpatterns = [
     path("", views.list_view, name="list_view"),
-    path("experts/", views.experts_view, name="experts_view"),
     path("overview/", views.overview_view, name="overview_view"),
     path("create/<int:expert_id>/", views.create_view, name="create_view"),
     path("<int:consultation_id>/", views.detail_view, name="detail_view"),

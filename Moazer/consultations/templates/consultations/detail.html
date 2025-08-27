@@ -1,99 +1,155 @@
 {% extends 'main/base.html' %}
 {% block title %}تفاصيل الاستشارة{% endblock %}
-{% block content %}
 
-<div>
-  <div>
-    <div>
-      <td>الرقم: {{ c.id }}</td><br>
-      <td>الحالة: {{ c.get_status_display }}</td><br>
-      <td>النوع: {{ c.get_type_display }} </td><br>
-      <td >تاريخ الانشاء: {{ c.created_at }}</td><br>
-      <td>الطالب: {{ c.student.username }} — الخبير: {{ c.expert.username }}</td><br>
-      <hr>
-      <h5>المحادثة</h5>
-      <div id="chat-box">
+{% block content %}
+<div class="p-6 space-y-8 flex flex-col gap-8">
+
+  <!-- Consultations Data -->
+  <div class="flex lg:flex-row flex-col gap-4">
+    <div class="lg:w-[50%] w-full">
+      <h2 class="text-lg font-semibold mb-4">بيانات الاستشارة</h2>
+      <div class="flex flex-col gap-4 glass-card-expert p-4 rounded-3xl h-full">
+        <div class="flex lg:flex-row flex-col gap-2">
+          <span class="font-semibold text-sm">رقم الاستشارة:</span>
+          <span class="text-sm">#{{ c.id }}</span>
+        </div>
+        <div class="flex lg:flex-row flex-col gap-2">
+          <span class="font-semibold text-sm">حالة الاستشارة:</span>
+          <span class="text-sm px-3 rounded-full 
+            {% if c.status == "NEW" %} bg-blue-100 text-blue-700
+            {% elif c.status == "PENDING" %} bg-yellow-100 text-yellow-700
+            {% elif c.status == "ACTIVE" %} bg-green-100 text-green-700
+            {% elif c.status == "COMPLETED" %} bg-gray-100 text-gray-700
+            {% elif c.status == "CLOSED" %} bg-red-100 text-red-700
+            {% else %} bg-gray-200 text-gray-600 {% endif %}">
+            {{ c.get_status_display }}
+          </span>
+        </div>
+
+        <div class="flex lg:flex-row flex-col gap-2">
+          <span class="font-semibold text-sm">نوع الاستشارة:</span>
+          <span class="text-sm">{{ c.get_type_display }}</span>
+        </div>
+        <div class="flex lg:flex-row flex-col gap-2">
+          <span class="font-semibold text-sm">اسم الطالب:</span>
+          <span class="text-sm">{{ c.student.get_full_name }}</span>
+        </div>
+        <div class="flex lg:flex-row flex-col gap-2">
+          <span class="font-semibold text-sm">اسم الخبير:</span>
+          <span class="text-sm">{{ c.expert.get_full_name }}</span>
+        </div>
+        <div class="flex lg:flex-row flex-col gap-2">
+          <span class="font-semibold text-sm">تاريخ الانشاء:</span>
+          <span class="text-sm">{{ c.created_at|date:"H:i Y-m-d" }}</span>
+        </div>
+      </div>
+    </div>
+    <!-- Consultations Information -->
+    <div class="lg:w-[50%] w-full">
+      <h2 class="text-lg font-semibold mb-4">تفاصيل الاستشارة الأساسية</h2>
+      <div class="flex flex-col gap-4 glass-card-expert p-4 rounded-lg h-full">
+        <div class="flex flex-col gap-2">
+          <span class="font-semibold text-sm">عنوان الاستشارة:</span>
+          <p class="text-sm">{{ c.title }}</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="font-semibold text-sm">وصف الاستشارة:</span>
+          <p class="text-sm text-gray-600 break-words whitespace-pre-line"> {{ c.description }}</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="font-semibold text-sm">المرفقات:</span>
+          <p class="text-sm">
+            {% for a in c.attachments.all %}
+            <a href="{{ a.file.url }}" target="_blank" class="bg-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" />
+                <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
+              </svg>
+            </a>
+            {% endfor %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="w-full">
+    <h2 class="text-lg font-semibold mb-2">التواصل</h2>
+    <div class="bg-white rounded-lg p-4 glass-card-expert">
+      <div id="chat-box" class="h-80 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
         {% include "consultations/messages.html" with c=c %}
       </div>
-
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="send_message">
-        <textarea name="message" rows="2" placeholder="اكتب رسالتك..."></textarea>
-        <button type="submit">إرسال</button>
-      </form>
+      <!-- Send Message -->
+      <div>
+      {% if c.status == "ACTIVE" %}
+        <form method="post" class="flex gap-2 mt-3">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="send_message">
+          <textarea name="message" rows="2" placeholder="اكتب رسالتك..." class="flex-1 border border-gray-200 rounded-lg p-2 text-sm focus:ring focus:ring-blue-200"></textarea>
+          <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-lg">إرسال</button>
+        </form>
+      {% else %}
+        <div class="text-gray-400 text-sm text-center py-2">
+          {% if c.status == "PENDING" %}
+            لا يمكن إرسال رسائل حتى يتم قبول الاستشارة من الخبير
+          {% else %}
+            هذه الاستشارة مغلقة ولا يمكن إرسال رسائل جديدة
+          {% endif %}
+        </div>
+      {% endif %}
+      </div>
     </div>
   </div>
 
-  <div>
-    <div>
-      <h5>تفاصيل</h5>
 
-      <td>العنوان:{{ c.title }}</td><br>
-      <p>{{ c.description|linebreaks }}</p>
-      <h6>المرفقات</h6>
-      <ul>
-        {% for a in c.attachments.all %}
-          <li><a href="{{ a.file.url }}" target="_blank">ملف #{{ a.id }}</a> — {{ a.created_at|date:"Y-m-d H:i" }}</li>
-        {% empty %}
-          <li>لا توجد مرفقات.</li>
-        {% endfor %}
-      </ul>
 
-      {% if c.student_id == request.user.id and c.status == "ACTIVE" %}
-      <hr>
-        <form method="post">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="end_consultation">
-          <button type="submit">إنهاء الاستشارة</button>
-        </form>
-      {% endif %}
+<!-- Buttons -->
+<div class="mt-6 flex flex-wrap gap-2 justify-end">
+  {% if c.student_id == request.user.id and c.status == "ACTIVE" %}
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="end_consultation">
+    <button type="submit" class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md shadow-sm">إنهاء الاستشارة</button>
+  </form>
+  {% endif %}
 
-    {% if is_expert and c.status in "ACTIVE PENDING" %}
-        <hr>
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="expert_end">
-            <button type="submit">إنهاء الاستشارة</button>
-        </form>
-    {% endif %}
+  {% if is_expert and c.status in "ACTIVE PENDING" %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="expert_end">
+      <button type="submit" class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md shadow-sm">إنهاء الاستشارة</button>
+    </form>
+  {% endif %}
 
-      {% if is_expert and c.status == "PENDING" %}
-        <hr>
-        <form method="post">
-          {% csrf_token %}
-          <button name="action" value="expert_accept">قبول</button>
-          <button name="action" value="expert_reject">رفض</button>
-        </form>
-      {% endif %}
-    </div>
-  </div>
+  {% if is_expert and c.status == "PENDING" %}
+    <form method="post" class="flex gap-2">
+      {% csrf_token %}
+      <button name="action" value="expert_accept" class="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white text-sm rounded-md shadow-sm">قبول</button>
+      <button name="action" value="expert_reject" class="px-4 py-1.5 bg-gray-400 hover:bg-gray-500 text-white text-sm rounded-md shadow-sm">رفض</button>
+    </form>
+  {% endif %}
 </div>
-<script>
-    (function(){
-      // Reference to the chat container
-      const box = document.getElementById('chat-box');
-      // Endpoint that returns the partial HTML for chat messages
-      const url = "{% url 'consultations:messages_partial' consultation_id=c.id %}";
 
-      // Function to fetch and refresh chat messages
-      function refreshMessages() {
-        fetch(url, {headers: {'X-Requested-With':'XMLHttpRequest'}})
-          .then(r => r.text())
-          .then(html => {
-            const atBottom = (box.scrollTop + box.clientHeight + 5) >= box.scrollHeight;
-            box.innerHTML = html;
-            // If user was at bottom → auto-scroll to keep view pinned
-            if (atBottom) {
-              box.scrollTop = box.scrollHeight;
-            }
-          })
-          .catch(() => {});
-      }
-        // On first load → scroll to bottom
-        box.scrollTop = box.scrollHeight;
-        // Poll server every 3 seconds to refresh messages
-        setInterval(refreshMessages, 3000);
-    })();
-  </script>
+
+<script>
+  (function(){
+    const box = document.getElementById('chat-box');
+    const url = "{% url 'consultations:messages_partial' consultation_id=c.id %}";
+
+    function refreshMessages() {
+      fetch(url, {headers: {'X-Requested-With':'XMLHttpRequest'}})
+        .then(r => r.text())
+        .then(html => {
+          const atBottom = (box.scrollTop + box.clientHeight + 5) >= box.scrollHeight;
+          box.innerHTML = html;
+          if (atBottom) { box.scrollTop = box.scrollHeight; }
+        })
+        .catch(() => {});
+    }
+
+    box.scrollTop = box.scrollHeight;
+    setInterval(refreshMessages, 3000);
+  })();
+</script>
 {% endblock %}

@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 
 
 def home_view(request: HttpRequest):
-    for name in ["Students", "Experts", "Parents", "School Admin", "Visitors"]:
+    for name in ["Students", "Experts"]:
      Group.objects.get_or_create(name=name)
 
     # Students Counts 
