@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import StudentProfile, ExpertProfile, Specialization, ConsultationType
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def login_view(request: HttpRequest):
     if request.method == "POST":
@@ -95,6 +96,72 @@ def logout_view(request):
     messages.success(request, "تم تسجيل الخروج بنجاح")
     return redirect("accounts:login_view")  # رجع المستخدم لصفحة تسجيل الدخول
 
+
+
+
+@login_required
+def profile_view(request):
+    user = request.user
+
+    try:
+        profile = StudentProfile.objects.get(user=user)
+        profile_type = "student"
+    except StudentProfile.DoesNotExist:
+        try:
+            profile = ExpertProfile.objects.get(user=user)
+            profile_type = "expert"
+        except ExpertProfile.DoesNotExist:
+            messages.error(request, "لا يوجد بروفايل لهذا المستخدم.")
+            return redirect("main:home_view")
+
+    
+    if request.method == "POST":
+        user.first_name = request.POST.get("first_name")
+        user.last_name = request.POST.get("last_name")
+        user.email = request.POST.get("email")
+        user.save()
+
+        profile.birth_date = request.POST.get("birth_date")
+        profile.gender = request.POST.get("gender")
+        profile.phone = request.POST.get("phone")
+        profile.city = request.POST.get("city")
+        profile.bio = request.POST.get("bio")
+
+        avatar_file = request.FILES.get("avatar")
+        if avatar_file:
+            profile.avatar = avatar_file
+
+        if profile_type == "student":
+            profile.study_stage = request.POST.get("study_stage")
+        elif profile_type == "expert":
+            profile.specializations.set(request.POST.getlist("specializations"))
+            profile.consultation_types.set(request.POST.getlist("consultation_types"))
+            profile.consultation_fee = request.POST.get("consultation_fee")
+            profile.iban_number = request.POST.get("iban_number")
+
+        profile.save()
+        messages.success(request, "تم حفظ التغييرات بنجاح")
+        return redirect("accounts:profile")
+
+    context = {
+        "profile": profile,
+        "profile_type": profile_type,
+        "all_specializations": Specialization.objects.all() if profile_type == "expert" else [],
+        "all_consultation_types": ConsultationType.objects.all() if profile_type == "expert" else [],
+    }
+    return render(request, "accounts/profile.html", context)
+
+
+@login_required
+def delete_profile(request):
+    if request.method == "POST":
+        user = request.user
+        user.delete()
+        messages.success(request, "تم حذف الحساب بنجاح")
+        return redirect('main:home_view')
+    return redirect('accounts:profile_view')
+
+
 # Expert Related 
 
 def experts_view(request):
@@ -135,3 +202,4 @@ def deactivate_expert(request, expert_id):
 def expert_detail_view(request, expert_id):
     expert = get_object_or_404(ExpertProfile, id=expert_id, is_approved=True)
     return render(request, "accounts/expert_detail.html", {"expert": expert})
+

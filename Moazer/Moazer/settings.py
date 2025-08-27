@@ -38,9 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'multiselectfield',
+    'Contact',
     'accounts',
     "consultations",
     "ai_interview",
+
 ]
 
 MIDDLEWARE = [

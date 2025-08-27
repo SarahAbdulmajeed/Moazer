@@ -1,0 +1,93 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+
+{% if not user.is_authenticated %}
+    <h2>مرحبا بالزائر</h2>
+    <p>الرجاء تسجيل الدخول لعرض البروفايل.</p>
+
+{% else %}
+    <h2>
+        {% if profile_type == "student" %}بروفايل الطالب{% else %}بروفايل الخبير{% endif %}
+    </h2>
+
+    
+    <form method="post" enctype="multipart/form-data" action="{% url 'accounts:profile' %}">
+        {% csrf_token %}
+        <label>الاسم الأول</label>
+        <input type="text" name="first_name" value="{{ user.first_name }}" required>
+
+        <label>الاسم الأخير</label>
+        <input type="text" name="last_name" value="{{ user.last_name }}" required>
+
+        <label>البريد الإلكتروني</label>
+        <input type="email" name="email" value="{{ user.email }}" required>
+
+        <label>تاريخ الميلاد</label>
+        <input type="date" name="birth_date" value="{{ profile.birth_date|date:'Y-m-d' }}" required>
+
+        <label>الجنس</label>
+        <select name="gender" required>
+            <option value="male" {% if profile.gender == 'male' %}selected{% endif %}>ذكر</option>
+            <option value="female" {% if profile.gender == 'female' %}selected{% endif %}>أنثى</option>
+        </select>
+
+        <label>رقم الجوال</label>
+        <input type="text" name="phone" value="{{ profile.phone }}" required>
+
+        <label>المدينة</label>
+        <input type="text" name="city" value="{{ profile.city }}" required>
+
+        <label>نبذة عن {{ profile_type|title }}</label>
+        <textarea name="bio" required>{{ profile.bio }}</textarea>
+
+        {% if profile_type == "student" %}
+            <label>مرحلة الدراسة</label>
+            <select name="study_stage" required>
+                <option value="middle" {% if profile.study_stage == "middle" %}selected{% endif %}>المتوسطة</option>
+                <option value="high" {% if profile.study_stage == "high" %}selected{% endif %}>الثانوية</option>
+                <option value="diploma" {% if profile.study_stage == "diploma" %}selected{% endif %}>الدبلوم</option>
+                <option value="bachelor" {% if profile.study_stage == "bachelor" %}selected{% endif %}>البكالوريوس</option>
+            </select>
+        {% else %}
+            <label>التخصصات</label>
+            <select name="specializations" multiple required>
+                {% for s in all_specializations %}
+                    <option value="{{ s.id }}" {% if s in profile.specializations.all %}selected{% endif %}>{{ s.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label>أنواع الاستشارات</label>
+            <select name="consultation_types" multiple required>
+                {% for c in all_consultation_types %}
+                    <option value="{{ c.id }}" {% if c in profile.consultation_types.all %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label>قيمة الاستشارة</label>
+            <input type="number" step="0.01" name="consultation_fee" value="{{ profile.consultation_fee }}" required>
+
+            <label>رقم الآيبان</label>
+            <input type="text" name="iban_number" value="{{ profile.iban_number }}" required>
+        {% endif %}
+{% if profile.avatar %}
+    <label>الصورة الحالية</label><br>
+    <img src="{{ profile.avatar.url }}" alt="Avatar" width="150" height="150"><br><br>
+{% endif %}
+
+<label>تغيير الصورة</label>
+<input type="file" name="avatar">
+        <button type="submit">حفظ التغييرات</button>
+    </form>
+
+    
+    <form method="post" action="{% url 'accounts:delete_profile' %}" style="margin-top:20px;">
+        {% csrf_token %}
+        <button type="submit" class="delete">حذف الحساب</button>
+    </form>
+
+{% endif %}
+</div>
+{% endblock %}
