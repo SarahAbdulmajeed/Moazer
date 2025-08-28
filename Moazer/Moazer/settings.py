@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -133,10 +134,15 @@ TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
 LOGIN_REDIRECT_URL = "/consultations/"     # بعد اللوقن يروح للقائمة
 LOGOUT_REDIRECT_URL = "/accounts/login/"   # بعد اللوغ آوت يرجع للوقن
 
-EMAIL_HOST_USER = 'moazer532@gmail.com'
-EMAIL_HOST_PASSWORD = 'dsar qdij fnmb rmzk'
+
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
+EMAIL_HOST_USER = 'moazer532@gmail.com'
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD') 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SECRET_KEY = config('SECRET_KEY')

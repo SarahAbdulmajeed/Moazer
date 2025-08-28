@@ -6,26 +6,42 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
+
+
+
+
 def contact_view(request):
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        message = request.POST.get("message")
+        if request.user.is_authenticated:
+            # للمسجل
+            name = request.user.get_full_name() or request.user.username
+            email = request.user.email
+        else:
+            # للزائر
+            name = request.POST.get("name", "").strip()
+            email = request.POST.get("email", "").strip()
+
+        message_text = request.POST.get("message", "").strip()
+
+        if not message_text:
+            messages.error(request, "الرجاء كتابة الرسالة قبل الإرسال.")
+            return redirect(request.path)
+
+        if not request.user.is_authenticated and (not name or not email):
+            messages.error(request, "الرجاء كتابة الاسم والبريد الإلكتروني.")
+            return redirect(request.path)
 
         ContactMessage.objects.create(
             name=name,
             email=email,
-            message=message
+            message=message_text
         )
+
         messages.success(request, "تم إرسال رسالتك بنجاح!")
-        return redirect("contact:contact") 
+        return redirect(request.path)
 
-    user = request.user if request.user.is_authenticated else None
+    return render(request, "contact/contact.html", {"user": request.user if request.user.is_authenticated else None})
 
-    context = {
-        "user": user
-    }
-    return render(request, "contact/contact.html", context)
 
 @staff_member_required
 def contact_messages_view(request):
@@ -57,3 +73,6 @@ def reply_message_view(request, message_id):
 
         messages.success(request, f"تم إرسال الرد إلى {msg.email}")
         return redirect("contact:admin_messages")
+
+
+
