@@ -217,6 +217,11 @@
                         <span class="ms-3">تواصل معنا</span>
                      </a>
                   </li>
+                  {% if user.is_staff %}
+                  <li>
+                    <a href="{% url 'contact:admin_messages' %}">جميع رسائل التواصل</a>
+                  </li>
+                  {% endif %}
                </ul>
                <ul class="space-y-2 font-medium">
                   {% if user.is_authenticated %}
