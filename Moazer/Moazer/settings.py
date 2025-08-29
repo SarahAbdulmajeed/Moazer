@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "ai_interview",
     "subscriptions",
     'Contact',
+    "career_path"
 ]
 
 MIDDLEWARE = [
