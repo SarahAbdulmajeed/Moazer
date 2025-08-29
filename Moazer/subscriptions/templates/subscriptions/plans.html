@@ -1,0 +1,21 @@
+{% extends "main/base.html" %}
+{% block title %}الاشتراكات{% endblock %}
+{% block content %}
+<h3 class="mb-4">الباقات</h3>
+
+<div class="grid gap-3 md:grid-cols-3">
+  {% for p in plans %}
+  <div class="border rounded p-4 bg-white/80">
+    <div class="text-lg font-semibold">{{ p.name }}</div>
+    <div class="mt-1 text-sm">المحاولات: <strong>{{ p.attempts }}</strong></div>
+    <div class="mt-1 text-sm">السعر: <strong>{{ p.price_sar }}</strong> ر.س</div>
+    <a class="inline-block mt-3 px-3 py-1 rounded bg-black text-white"
+       href="{% url 'subscriptions:subscribe' p.id %}">
+       اشترك الآن
+    </a>
+  </div>
+  {% empty %}
+  <div>لا توجد باقات.</div>
+  {% endfor %}
+</div>
+{% endblock %}

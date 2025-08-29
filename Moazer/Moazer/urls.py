@@ -24,6 +24,8 @@ urlpatterns = [
     path('contact/', include('Contact.urls')),  
     path("consultations/", include("consultations.urls")),
     path('accounts/',include('accounts.urls')),
-    #path("accounts/", include("django.contrib.auth.urls")),  # ← لوقن/لوغ آوت جاهز
+    path("subscriptions/", include("subscriptions.urls")),
+    path("ai-interview/", include("ai_interview.urls")),
+    path('contact/', include('Contact.urls')),  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
