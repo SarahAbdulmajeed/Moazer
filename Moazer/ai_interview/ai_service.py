@@ -49,54 +49,83 @@ def _openai_generate_questions(job_title: str, n: int = 5) -> list[str]:
         "أعطني فقط قائمة الأسئلة، كل سؤال في سطر مستقل، بدون أرقام وبدون شرح."
     )
 
-    # Using the Responses API as في التوثيق الحديث
-    resp = _client.responses.create(
-        model="gpt-4o-mini",
-        input=prompt,
-    )
-    content = resp.output_text.strip()
-
-    # Split per line, strip bullet chars
-    lines = [ln.strip().lstrip("•-").strip() for ln in content.splitlines() if ln.strip()]
-    # Filter empty / duplicates defensively
+    r = _client.responses.create(model="gpt-4o-mini", input=prompt)
+    lines = [ln.strip().lstrip("•-").strip() for ln in r.output_text.splitlines() if ln.strip()]
     uniq = []
     for q in lines:
         if q and q not in uniq:
             uniq.append(q)
     if not uniq:
-        # If the model returned something odd
-        raise RuntimeError("OpenAI returned empty questions. Try again or check your prompt/quota.")
+        raise RuntimeError("Empty questions from model.")
     return uniq[:n]
 
-
-def _openai_analyze(job_title: str, answers_text: str) -> dict:
+def analyze_session(job_title: str, qa_pairs: list[dict]) -> dict:
     """
-    Ask OpenAI to summarize strengths/weaknesses/recommendation in Arabic and return a dict.
-    """
-    prompt = (
-        "حلّل إجابات مقابلة عمل عربية بشكل موجز. أعطني JSON بالمفاتيح العربية التالية فقط:\n"
-        "strengths, weaknesses, recommendation\n"
-        "بدون أي نص خارج JSON.\n\n"
-        f"الدور/المسمى: {job_title}\n"
-        f"الإجابات:\n{answers_text}\n"
-    )
-    resp = _client.responses.create(
-        model="gpt-4o-mini",
-        input=prompt,
-    )
-    txt = resp.output_text.strip()
-
-    # Extract JSON strictly
-    m = re.search(r"\{.*\}", txt, flags=re.S)
-    if not m:
-        raise RuntimeError("OpenAI did not return JSON as requested.")
-    obj = json.loads(m.group(0))
-    return {
-        "strengths": obj.get("strengths", ""),
-        "weaknesses": obj.get("weaknesses", ""),
-        "recommendation": obj.get("recommendation", ""),
+    Analyze per-answer + overall.
+    qa_pairs: [{"order":1,"question":"...","answer":"..."}, ...]
+    Returns:
+    {
+      "answers": [
+        {"order":1,"strengths":"..","weaknesses":"..","score":3},
+        ...
+      ],
+      "session": {
+        "strengths":"..","weaknesses":"..","recommendation":"..","overall_score":3.8
+      }
     }
+    """
+    _require_client()
 
+    # Build a compact prompt; ask STRICT JSON only.
+    prompt = (
+        "أنت مدرّب مقابلات. حلّل إجابات عربية لمقابلة وفق الآتي:\n"
+        "1) لكل سؤال: strengths, weaknesses, score (عدد صحيح من 1 إلى 5).\n"
+        "2) ملخص عام: strengths, weaknesses, recommendation, overall_score (متوسط من 1 إلى 5، رقم عشري بمرتبة واحدة).\n"
+        "أعد JSON فقط بهذه البنية دون أي نص خارجي:\n"
+        "{\n"
+        '  "answers":[{"order":1,"strengths":"..","weaknesses":"..","score":3},...],\n'
+        '  "session":{"strengths":"..","weaknesses":"..","recommendation":"..","overall_score":3.8}\n'
+        "}\n\n"
+        f"المسمى الوظيفي: {job_title}\n"
+        "الأسئلة والإجابات:\n"
+    )
+    for item in qa_pairs:
+        prompt += f"- س{item['order']}: {item['question']}\n  إجابة: {item.get('answer','')}\n"
+
+    try:
+        r = _client.responses.create(model="gpt-4o-mini", input=prompt)
+        txt = r.output_text.strip()
+        m = re.search(r"\{.*\}", txt, flags=re.S)
+        data = json.loads(m.group(0) if m else txt)
+
+        # Defensive normalization
+        answers = data.get("answers", []) or []
+        session = data.get("session", {}) or {}
+        for a in answers:
+            a["order"] = int(a.get("order", 0) or 0)
+            s = a.get("score")
+            a["score"] = int(s) if isinstance(s, (int, float, str)) and str(s).isdigit() else None
+            a["strengths"] = (a.get("strengths") or "").strip()
+            a["weaknesses"] = (a.get("weaknesses") or "").strip()
+
+        # If model didn't return overall_score, compute mean of available scores
+        if "overall_score" not in session or session.get("overall_score") in (None, ""):
+            valid = [a["score"] for a in answers if isinstance(a["score"], int)]
+            session["overall_score"] = round(sum(valid) / len(valid), 1) if valid else None
+
+        session["strengths"] = (session.get("strengths") or "").strip()
+        session["weaknesses"] = (session.get("weaknesses") or "").strip()
+        session["recommendation"] = (session.get("recommendation") or "").strip()
+
+        return {"answers": answers, "session": session}
+
+    except openai_error.RateLimitError:
+        # If quota is exceeded, return neutral structure (avoid crashing)
+        return {"answers": [
+                    {"order": item["order"], "strengths": "", "weaknesses": "", "score": None}
+                    for item in qa_pairs
+                ],
+                "session": {"strengths": "", "weaknesses": "", "recommendation": "", "overall_score": None}}
 
 # ---------- PUBLIC API ----------
 

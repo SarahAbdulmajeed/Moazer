@@ -31,6 +31,8 @@ class InterviewSession(models.Model):
     weaknesses = models.TextField(blank=True)
     recommendation = models.TextField(blank=True)
 
+    overall_score = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -62,6 +64,9 @@ class InterviewAnswer(models.Model):
     question = models.ForeignKey(SessionQuestion, on_delete=models.CASCADE)
     answer = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    strengths = models.TextField(blank=True)   # what was good in this answer
+    weaknesses = models.TextField(blank=True)  # what to improve in this answer
+    score = models.PositiveSmallIntegerField(null=True, blank=True)  # 1..5
 
     class Meta:
         unique_together = ("session", "question")             # One answer per question in a session

@@ -26,5 +26,6 @@ urlpatterns = [
     path('accounts/',include('accounts.urls')),
     path("subscriptions/", include("subscriptions.urls")),
     path("ai-interview/", include("ai_interview.urls")),
+    path('contact/', include('Contact.urls')),  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

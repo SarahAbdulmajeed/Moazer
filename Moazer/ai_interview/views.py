@@ -9,7 +9,8 @@ from .models import (
     InterviewAnswer,
     InterviewStatus,
 )
-from .ai_service import generate_questions, analyze_answers
+from .ai_service import generate_questions, analyze_session
+
 from subscriptions.services import (
     get_remaining_attempts,
     consume_attempt,
@@ -101,21 +102,44 @@ def question_view(request, session_id: int, step: int):
             return redirect("ai_interview:question", session_id=s.id, step=step + 1)
 
         # Last step → aggregate answers and analyze
-        joined = "\n\n".join(
-            f"س{qq.order}: {aa.answer}"
-            for qq, aa in (
-                (qq, InterviewAnswer.objects.filter(session=s, question=qq).first())
-                for qq in questions
-            )
-            if aa and aa.answer
-        )
+        qa_pairs = []
+        for qq in questions:
+            ans = InterviewAnswer.objects.filter(session=s, question=qq).first()
+            qa_pairs.append({
+                "order": qq.order,
+                "question": qq.text,
+                "answer": (ans.answer if ans else "") or "",
+            })
 
-        summary = analyze_answers(job_title=s.job_title, answers_text=joined)
-        s.strengths = summary.get("strengths", "")
-        s.weaknesses = summary.get("weaknesses", "")
-        s.recommendation = summary.get("recommendation", "")
+        analysis = analyze_session(job_title=s.job_title, qa_pairs=qa_pairs)
+
+        # Persist per-answer feedback
+        per_answers = {a["order"]: a for a in analysis.get("answers", [])}
+        for qq in questions:
+            a = InterviewAnswer.objects.get(session=s, question=qq)
+            fb = per_answers.get(qq.order, {})
+            a.strengths = fb.get("strengths", "") or ""
+            a.weaknesses = fb.get("weaknesses", "") or ""
+            a.score = fb.get("score")
+            a.save(update_fields=["strengths", "weaknesses", "score"])
+
+        # Session-level summary
+        sess = analysis.get("session", {})
+        s.strengths = sess.get("strengths", "") or ""
+        s.weaknesses = sess.get("weaknesses", "") or ""
+        s.recommendation = sess.get("recommendation", "") or ""
+
+        # If model forgot overall_score, compute from answers
+        if sess.get("overall_score") is not None:
+            s.overall_score = sess["overall_score"]
+        else:
+            # compute mean of existing scores
+            vals = InterviewAnswer.objects.filter(session=s, score__isnull=False).values_list("score", flat=True)
+            vals = list(vals)
+            s.overall_score = round(sum(vals) / len(vals), 1) if vals else None
+
         s.status = InterviewStatus.FINISHED
-        s.save(update_fields=["strengths", "weaknesses", "recommendation", "status"])
+        s.save(update_fields=["strengths", "weaknesses", "recommendation", "overall_score", "status"])
 
         return redirect("ai_interview:result", session_id=s.id)
 
