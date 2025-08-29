@@ -1,0 +1,45 @@
+{% extends 'main/base.html' %}
+{% block title %}النتيجة{% endblock %}
+{% block content %}
+<h3>المقابلة الافتراضية AI (رقم #{{ s.id|stringformat:"03d" }})</h3>
+
+<div>
+  <div>
+    <div>
+      <div>رقم المقابلة</div>
+      <div>{{ s.id|stringformat:"03d" }}</div>
+      <div>المسمى الوظيفي</div>
+      <div>{{ s.job_title }}</div>
+    </div>
+  </div>
+  <div>
+    <div>
+      <div>الحالة</div>
+      <div>{{ s.get_status_display }}</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>نقاط القوة</div>
+  <div>{{ s.strengths|default:"—" }}</div>
+  <hr>
+  <div>نقاط الضعف</div>
+  <div>{{ s.weaknesses|default:"—" }}</div>
+  <hr>
+  <div>التوصية</div>
+  <div>{{ s.recommendation|default:"—" }}</div>
+</div>
+
+<h5>سجل المحادثات</h5>
+<div>
+  {% for a in answers %}
+    <div>
+      <div>{{ a.question.order }}: {{ a.question.text }}</div>
+      <div>{{ a.answer|default:"—" }}</div>
+    </div>
+  {% empty %}
+    <div>لا توجد إجابات.</div>
+  {% endfor %}
+</div>
+{% endblock %}
