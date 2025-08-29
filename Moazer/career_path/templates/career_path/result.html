@@ -1,0 +1,46 @@
+{% extends "main/base.html" %}
+{% block title %}النتيجة{% endblock %}
+{% block content %}
+<!-- Final result: suggested path + summarized insights + Q/A log. -->
+<div class="max-w-4xl mx-auto py-10">
+  <h2 class="text-2xl font-bold mb-6 text-center">اكتشف مسارك (رقم #{{ s.id|stringformat:"03d" }})</h2>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="bg-white/80 rounded-2xl p-6 shadow">
+      <h3 class="font-semibold mb-3">النتيجة</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between"><span class="text-gray-600">رقم الاختبار</span><span>{{ s.id|stringformat:"03d" }}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">المسار المقترح</span><span class="font-semibold">{{ s.suggested_path|default:"—" }}</span></div>
+      </div>
+    </div>
+
+    <div class="bg-white/80 rounded-2xl p-6 shadow">
+      <h3 class="font-semibold mb-3">ملخص</h3>
+      <div class="mb-3">
+        <div class="text-gray-600 mb-1">نقاط القوة</div>
+        <div>{{ s.strengths|default:"—" }}</div>
+      </div>
+      <div class="mb-3">
+        <div class="text-gray-600 mb-1">نقاط بحاجة لتطوير</div>
+        <div>{{ s.weaknesses|default:"—" }}</div>
+      </div>
+      <div>
+        <div class="text-gray-600 mb-1">التوصية</div>
+        <div>{{ s.recommendation|default:"—" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="font-semibold mt-10 mb-3">سجل الإجابات</h3>
+  <div class="bg-white/80 rounded-2xl p-6 shadow space-y-4">
+    {% for a in answers %}
+      <div>
+        <div class="text-gray-600">{{ a.question.order }}: {{ a.question.text }}</div>
+        <div>{{ a.answer|default:"—" }}</div>
+      </div>
+    {% empty %}
+      <div>لا توجد إجابات.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -5,6 +5,7 @@ from .models import Wallet
 User = get_user_model()
 
 PRODUCT_AI_INTERVIEW = "ai_interview"  # reuse this string everywhere
+PRODUCT_CAREER_PATH = "career_path"
 
 def get_remaining_attempts(user) -> Optional[int]:
     """

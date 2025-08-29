@@ -1,0 +1,54 @@
+{% extends "main/base.html" %}
+{% block title %}سجل اختبارات المسار{% endblock %}
+{% block content %}
+<!-- Authenticated user's session history with remaining attempts. -->
+<div class="max-w-4xl mx-auto py-10">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold">سجل اختبارات المسار</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+        <a href="{% url 'career_path:start_school' %}" class="block p-6 rounded-xl border hover:shadow">
+          <h3 class="font-semibold mb-2">لطلاب المدارس/الجامعةاختبار جديد </h3>
+          <p class="text-sm text-gray-600">أسئلة عامة تغطي عدة مسارات (تقني، صحي، ..) ثم تعمّق في الأقرب لك.</p>
+        </a>
+    
+        <a href="{% url 'career_path:start_grad' %}" class="block p-6 rounded-xl border hover:shadow">
+          <h3 class="font-semibold mb-2">للمقبلين على الوظيفة/الدراسات العليا اختبار جديد </h3>
+          <p class="text-sm text-gray-600">أدخل تخصصك الجامعي ونحدّد لك المسار الدقيق داخله (مثل أمن، ذكاء اصطناعي...)</p>
+        </a>
+      </div>  </div>
+  <p class="mt-2 text-gray-600">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
+
+  <div class="mt-6">
+    <table class="w-full text-right">
+      <thead>
+        <tr class="text-gray-600">
+          <th class="p-2">#</th>
+          <th class="p-2">الحالة</th>
+          <th class="p-2">المسار المقترح</th>
+          <th class="p-2">التاريخ</th>
+          <th class="p-2">عرض</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+        <tr class="border-t">
+          <td class="p-2">{{ it.id|stringformat:"03d" }}</td>
+          <td class="p-2">{{ it.get_status_display }}</td>
+          <td class="p-2">{{ it.suggested_path|default:"—" }}</td>
+          <td class="p-2">{{ it.created_at|date:"Y-m-d H:i" }}</td>
+          <td class="p-2">
+            {% if it.status == "FINISHED" %}
+            <a class="underline" href="{% url 'career_path:result' it.id %}">تفاصيل</a>
+          {% else %}
+            <a class="underline text-blue-600" href="{% url 'career_path:question' it.id 1 %}">متابعة</a>
+          {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td class="p-2 text-gray-500" colspan="5">لا توجد جلسات.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
