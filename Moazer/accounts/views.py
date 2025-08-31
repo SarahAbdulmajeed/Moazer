@@ -17,6 +17,13 @@ def login_view(request: HttpRequest):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            # If it is Expert but not Approved yet 
+            from accounts.models import ExpertProfile
+            expert_profile = getattr(user, "expertprofile", None) 
+            if expert_profile and not expert_profile.is_approved:
+                messages.error(request, "حسابك كخبير بانتظار التفعيل من الإدارة. لا يمكنك تسجيل الدخول حالياً.")
+                return redirect("accounts:login_view")
+
             login(request, user)
             messages.success(request, "تم تسجيل الدخول بنجاح ")
             return redirect("main:home_view") 
@@ -50,6 +57,8 @@ def registration_view(request):
             last_name=request.POST.get("last_name")
         )
 
+        avatar_file = request.FILES.get("avatar")
+
         if user_type == "student":
             StudentProfile.objects.create(
                 user=user,
@@ -57,7 +66,7 @@ def registration_view(request):
                 gender=request.POST.get("gender"),
                 phone=request.POST.get("phone"),
                 city=request.POST.get("city"),
-                avatar=request.FILES.get("avatar"),
+                avatar=avatar_file,
                 bio=request.POST.get("bio"),
                 study_stage=request.POST.get("study_stage"),
             )
@@ -71,7 +80,7 @@ def registration_view(request):
                 gender=request.POST.get("gender"),
                 phone=request.POST.get("phone"),
                 city=request.POST.get("city"),
-                avatar=request.FILES.get("avatar"),
+                avatar=avatar_file,
                 bio=request.POST.get("bio"),
                 is_approved=False
             )
@@ -84,6 +93,7 @@ def registration_view(request):
             group = Group.objects.get(name="Experts")
             user.groups.add(group)
 
+        messages.success(request, "تم إنشاء الحساب بنجاح ")
         return redirect("accounts:login_view")
 
     return render(request, "accounts/registration.html", {
@@ -180,9 +190,7 @@ def experts_view(request):
         approved_experts = approved_experts.filter(specializations__id=specialization_id)
     if consultation_id:
         approved_experts = approved_experts.filter(consultation_types__id=consultation_id)
-
-
-
+        
     return render(request, "accounts/experts.html", {"approved_experts": approved_experts,"pending_experts": pending_experts,"specializations": Specialization.objects.all(), "consultation_types": ConsultationType.objects.all(), "selected_spec": specialization_id, "selected_consult": consultation_id,})
 
 @staff_member_required

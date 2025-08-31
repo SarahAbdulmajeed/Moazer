@@ -1,39 +1,96 @@
 {% extends 'main/base.html' %}
 {% block title %}قائمة الاستشارات{% endblock %}
 {% block content %}
-<h3>قائمة الاستشارات</h3>
-<div>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>رقم الاستشارة</th>
-          {% if is_expert %}<th>اسم الطالب</th>{% else %}<th>الخبير المسؤول</th>{% endif %}
-          <th>النوع</th>
-          <th>آخر تحديث</th>
-          <th>الحالة</th>
-          <th>التفاصيل</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in items %}
-          <tr>
-            <td>{{ c.id }}</td>
-            {% if is_expert %}
-              <td>{{ c.student.username }}</td>
-            {% else %}
-              <td>{{ c.expert.username }}</td>
-            {% endif %}
-            <td>{{ c.get_type_display }}</td>
-            <td>{{ c.updated_at|date:"Y-m-d" }}</td>
-            <td>{{ c.get_status_display }}</td>
-            <td><a class="btn btn-sm btn-outline-secondary" href="{% url 'consultations:detail_view' consultation_id=c.id %}">عرض</a></td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="6" class="text-muted">لا توجد استشارات.</td></tr>
+<div class="p-6 space-y-6">
+  <!-- Title + Filter -->
+  <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3">
+    <h3 class="text-lg font-semibold">قائمة الاستشارات</h3>
+
+    <!-- Filter -->
+    <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
+      <!-- Consultation Status -->
+      <select name="status" class="border rounded-md p-1.5 text-sm">
+        <option value="">الحالة: الكل</option>
+        {% for value, label in status_choices %}
+          <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
         {% endfor %}
-      </tbody>
-    </table>
+      </select>
+
+      <!-- Consultation Type -->
+      <select name="type" class="border rounded-md p-1.5 text-sm">
+        <option value="">النوع: الكل</option>
+        {% for value, label in ctype_choices %}
+          <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <!-- Filter Buttons -->
+      <button type="submit" title="تطبيق الفلترة" class="bg-black text-white px-3 py-1.5 rounded-md flex items-center">تطبيق</button>
+      <a href="{% url 'consultations:list_view' %}" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md flex items-center">إعادة تعيين</a>
+    </form>
   </div>
+
+  <!-- Consultation List -->
+  <section class="rounded-lg glass-card-expert text-center">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-gray-600 bg-gray-100">
+            <th class="py-2 pe-3">رقم</th>
+            {% if is_expert %}
+              <th class="py-2 pe-3">الطالب</th>
+            {% else %}
+              <th class="py-2 pe-3">الخبير</th>
+            {% endif %}
+            <th class="py-2 pe-3">النوع</th>
+            <th class="py-2 pe-3">آخر تحديث</th>
+            <th class="py-2 pe-3">الحالة</th>
+            <th class="py-2">تفاصيل</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in items %}
+            <tr class="border-t border-gray-200">
+              <td class="py-2 pe-3">{{ c.id }}</td>
+              {% if is_expert %}
+                <td class="py-2 pe-3">{{ c.student.username }}</td>
+              {% else %}
+                <td class="py-2 pe-3">{{ c.expert.username }}</td>
+              {% endif %}
+              <td class="py-2 pe-3">{{ c.get_type_display }}</td>
+              <td class="py-2 pe-3">{{ c.updated_at|date:"Y-m-d" }}</td>
+              <td class="py-2 pe-3">
+                {% if c.status == "NEW" %}
+                  <span class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800"> {{ c.get_status_display }} </span>
+                {% elif c.status == "PENDING" %}
+                  <span class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800"> {{ c.get_status_display }} </span>
+                {% elif c.status == "ACTIVE" %}
+                  <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800"> {{ c.get_status_display }} </span>
+                {% elif c.status == "COMPLETED" %}
+                  <span class="px-3 py-1 text-xs rounded-full bg-gray-200 text-gray-800"> {{ c.get_status_display }} </span>
+                {% elif c.status == "CLOSED" %}
+                  <span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-800"> {{ c.get_status_display }} </span>
+                {% endif %}
+              </td>
+              <td class="py-2">
+                <a href="{% url 'consultations:detail_view' consultation_id=c.id %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mx-auto text-gray-600 hover:text-black transition">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639 C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="py-4 text-gray-500">لا توجد استشارات.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>
 {% endblock %}

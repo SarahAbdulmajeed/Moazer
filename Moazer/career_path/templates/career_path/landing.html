@@ -1,0 +1,23 @@
+{# career_path/templates/career_path/landing.html #}
+{% extends "main/base.html" %}
+{% block title %}اكتشف مسارك{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto py-10">
+  <h2 class="text-2xl font-bold mb-2">اكتشف مسارك</h2>
+  {% if user.is_authenticated %}
+    <p class="text-gray-600 mb-6">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
+  {% endif %}
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <a href="{% url 'career_path:start_school' %}" class="block p-6 rounded-xl border hover:shadow">
+      <h3 class="font-semibold mb-2">لطلاب المدارس/الجامعة</h3>
+      <p class="text-sm text-gray-600">أسئلة عامة تغطي عدة مسارات (تقني، صحي، ..) ثم تعمّق في الأقرب لك.</p>
+    </a>
+
+    <a href="{% url 'career_path:start_grad' %}" class="block p-6 rounded-xl border hover:shadow">
+      <h3 class="font-semibold mb-2">للمقبلين على الوظيفة/الدراسات العليا</h3>
+      <p class="text-sm text-gray-600">أدخل تخصصك الجامعي ونحدّد لك المسار الدقيق داخله (مثل أمن، ذكاء اصطناعي...)</p>
+    </a>
+  </div>
+</div>
+{% endblock %}

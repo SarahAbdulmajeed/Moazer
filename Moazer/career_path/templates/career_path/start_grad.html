@@ -1,0 +1,21 @@
+{# career_path/templates/career_path/start_grad.html #}
+{% extends "main/base.html" %}
+{% block title %}ابدأ - مسارك الدقيق{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto py-10">
+  <h2 class="text-2xl font-bold mb-2">اختبار المسار الدقيق (خريجون)</h2>
+  <p class="text-center text-gray-600 mb-8">
+    أجب عن {{ 10 }} أسئلة عامة، ثم {{ 10 }} أسئلة متخصصة لتساعدنا على فهم اهتماماتك وطريقة تفكيرك، ومن ثم نقترح لك المسار الأنسب لك سواء كان تعليميًا أو مهنيًا
+  </p>
+  {% if user.is_authenticated %}
+    <p class="text-gray-600 mb-4">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
+  {% endif %}
+  <form method="post" class="space-y-4">{% csrf_token %}
+    <div>
+      <label class="block text-sm font-medium mb-1">تخصصك الجامعي</label>
+      <input name="major" class="w-full border rounded p-2" placeholder="مثال: علوم حاسب">
+    </div>
+    <button class="px-4 py-2 rounded bg-black text-white">ابدأ الآن</button>
+  </form>
+</div>
+{% endblock %}

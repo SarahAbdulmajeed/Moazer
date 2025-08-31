@@ -52,7 +52,20 @@ def list_view(request):
         qs = Consultation.objects.filter(student=request.user).order_by("-updated_at")
         role_flag = False
 
-    return render(request, "consultations/list.html", {"items": qs, "is_expert": role_flag})
+    # Filter based on status
+    status = request.GET.get("status")
+    if status:
+        qs = qs.filter(status=status)
+
+    # Filter based on type
+    ctype = request.GET.get("type")
+    if ctype:
+        qs = qs.filter(type=ctype)
+
+    qs = qs.order_by("-updated_at")
+
+
+    return render(request, "consultations/list.html", {"items": qs, "is_expert": role_flag, "status_choices": ConsultationStatus.choices, "ctype_choices": ConsultationTypeChoices.choices, "selected_status": status, "selected_type": ctype})
 
 # -------------------------------------------------------------------
 # Create a consultation for a specific expert (expert_id comes via URL).
@@ -219,14 +232,6 @@ def rate_view(request, consultation_id: int):
     # GET → render the star picker page
     return render(request, "consultations/rate.html", {"c": consultation})
 
-@login_required
-def experts_view(request):
-    """
-    Temporary experts list for testing: list actual experts via ExpertProfile.
-    """
-    experts = ExpertProfile.objects.select_related("user").order_by("user__id")
-    return render(request, "consultations/experts_list.html", {"experts": experts})
-
 
 # -------------------------------------------------------------------
 # Lightweight polling endpoint that returns only the chat messages HTML.
@@ -262,6 +267,7 @@ def overview_view(request):
 
     experts_qs = (
         ExpertProfile.objects
+        .filter(is_approved=True)
         .select_related("user")
         .prefetch_related("specializations", "consultation_types")
         .order_by("-rating_avg", "-rating_count", "user__id")[:5]

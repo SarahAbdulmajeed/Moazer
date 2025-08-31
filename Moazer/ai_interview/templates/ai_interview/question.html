@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+{% block title %}السؤال {{ step }}{% endblock %}
+{% block content %}
+<div>
+  <h3>المقابلة الافتراضية AI</h3>
+  <div>({{ s.job_title }})</div>
+  <small>السؤال رقم ({{ step }}) من ({{ total }})</small>
+</div>
+
+<div>
+  <h5>“ {{ q.text }} ”</h5>
+  <form method="post">{% csrf_token %}
+    <textarea name="answer" rows="7" placeholder="إجابتك...">{{ prev_answer }}</textarea>
+    <div class="d-flex gap-2">
+      {% if step > 1 %}
+        <a href="{% url 'ai_interview:question' s.id step|add:'-1' %}">رجوع</a>
+      {% endif %}
+      <button>التالي</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

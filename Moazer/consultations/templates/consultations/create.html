@@ -1,34 +1,46 @@
 {% extends 'main/base.html' %}
 {% block title %}طلب استشارة{% endblock %}
+
 {% block content %}
-<h3>طلب استشارة</h3>
+<div class="flex items-center justify-center min-h-[80vh] p-4">
+  <div class="bg-white/80 backdrop-blur-md shadow-lg rounded-2xl w-full max-w-md p-6 glass-card">
+    <h2 class="text-2xl font-bold text-center mb-6">طلب استشارة</h2>
 
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  <div>
-    <label>عنوان الاستشارة</label>
-    <input type="text" name="title" required>
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      
+      <!-- Title -->
+      <div>
+        <label for="id_title" class="block text-sm font-medium text-gray-700 mb-1">عنوان الاستشارة</label>
+        <input type="text" name="title" id="id_title" required class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]">
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label for="id_description" class="block text-sm font-medium text-gray-700 mb-1">نبذة عن الاستشارة</label>
+        <textarea name="description" id="id_description" rows="4" required class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]"></textarea>
+      </div>
+
+      <!-- Consultation Type -->
+      <div>
+        <label for="id_type" class="block text-sm font-medium text-gray-700 mb-1">نوع الاستشارة</label>
+        <select name="type" id="id_type" required class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]">
+          {% for value, label in ctype_choices %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Attachments -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">المرفقات (يمكن اختيار عدة ملفات)</label>
+        <input type="file" name="files" multiple class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white">
+      </div>
+
+      <!-- Send Button -->
+      <button type="submit" class="w-full bg-[linear-gradient(300deg,_var(--malibu-80),_var(--malibu-200))] text-white py-2 rounded-lg shadow mt-4">إرسال</button>
+      
+    </form>
   </div>
-
-  <div>
-    <label>نبذة عن الاستشارة</label>
-    <textarea name="description" rows="4" required></textarea>
-  </div>
-
-  <div>
-    <label>نوع الاستشارة</label>
-    <select name="type" required>
-      {% for value, label in ctype_choices %}
-        <option value="{{ value }}">{{ label }}</option>
-      {% endfor %}
-    </select>
-  </div>
-
-  <div>
-    <label>المرفقات (يمكن اختيار عدة ملفات)</label>
-    <input type="file" name="files" multiple>
-  </div>
-
-  <button type="submit">إرسال</button>
-</form>
+</div>
 {% endblock %}

@@ -1,0 +1,19 @@
+{% extends "main/base.html" %}
+{% block title %}اكتشف مسارك{% endblock %}
+{% block content %}
+<!-- Start page with a simple CTA. Shows remaining attempts for signed-in users. -->
+<div class="max-w-3xl mx-auto py-16">
+  <h1 class="text-3xl font-bold mb-3 text-center">اكتشف مسارك</h1>
+  <p class="text-center text-gray-600 mb-8">
+    أجب عن {{ 10 }} أسئلة عامة، ثم {{ 10 }} أسئلة متخصصة لتساعدنا على فهم اهتماماتك وطريقة تفكيرك، ومن ثم نقترح لك المسار الأنسب لك سواء كان تعليميًا أو مهنيًا
+  </p>
+
+  {% if user.is_authenticated and remaining is not None %}
+    <p class="text-center mb-4">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
+  {% endif %}
+
+  <form method="post" class="text-center">{% csrf_token %}
+    <button class="px-6 py-3 rounded bg-black text-white">ابدأ الآن</button>
+  </form>
+</div>
+{% endblock %}

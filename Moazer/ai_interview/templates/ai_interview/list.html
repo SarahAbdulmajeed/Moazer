@@ -1,0 +1,41 @@
+{% extends 'main/base.html' %}
+{% block title %}سجل المقابلات{% endblock %}
+{% block content %}
+{% if remaining is not None %}
+  <div class="mb-2 text-sm text-gray-700">محاولاتك المتبقية: <b>{{ remaining }}</b></div>
+{% endif %}
+
+<h4>سجل المقابلات</h4>
+<a href="{% url 'ai_interview:start' %}">ابدأ مقابلة جديدة</a>
+
+<div>
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th>رقم المقابلة</th><th>المسمى الوظيفي</th><th>الحالة</th><th>التاريخ</th><th>التفاصيل</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for it in items %}
+        <tr>
+          <td>{{ it.id|stringformat:"03d" }}</td>
+          <td>{{ it.job_title }}</td>
+          <td>{{ it.get_status_display }}</td>
+          <td>{{ it.created_at|date:"Y-m-d H:i" }}</td>
+          <td>
+            {% if it.status == "FINISHED" %}
+              <a href="{% url 'ai_interview:result' it.id %}">عرض النتيجة</a>
+            {% else %}
+              <a href="{% url 'ai_interview:question' it.id 1 %}">أكمل المقابلة</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td>لا توجد مقابلات بعد.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
