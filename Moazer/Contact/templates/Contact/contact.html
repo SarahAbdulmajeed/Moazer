@@ -7,15 +7,19 @@
 
     <form method="post">
         {% csrf_token %}
-        <label>الاسم</label>
-        <input type="text" name="name" 
-               value="{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}" 
-               required>
 
-        <label>البريد الإلكتروني</label>
-        <input type="email" name="email" 
-               value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" 
-               required>
+        {% if user.is_authenticated %}
+            
+            <p><strong>الاسم:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            <p><strong>البريد الإلكتروني:</strong> {{ user.email }}</p>
+        {% else %}
+           
+            <label>الاسم</label>
+            <input type="text" name="name" placeholder="أدخل اسمك" required>
+
+            <label>البريد الإلكتروني</label>
+            <input type="email" name="email" placeholder="أدخل بريدك الإلكتروني" required>
+        {% endif %}
 
         <label>رسالتك</label>
         <textarea name="message" required></textarea>
