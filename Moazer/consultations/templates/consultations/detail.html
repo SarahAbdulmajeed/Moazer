@@ -8,7 +8,7 @@
   <div class="flex lg:flex-row flex-col gap-4">
     <div class="lg:w-[50%] w-full">
       <h2 class="text-lg font-semibold mb-4">بيانات الاستشارة</h2>
-      <div class="flex flex-col gap-4 glass-card-expert p-4 rounded-3xl h-full">
+      <div class="flex flex-col gap-4 glass-card-expert p-4 rounded-lg h-full">
         <div class="flex lg:flex-row flex-col gap-2">
           <span class="font-semibold text-sm">رقم الاستشارة:</span>
           <span class="text-sm">#{{ c.id }}</span>
@@ -82,21 +82,23 @@
       </div>
       <!-- Send Message -->
       <div>
-      {% if c.status == "ACTIVE" %}
-        <form method="post" class="flex gap-2 mt-3">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="send_message">
-          <textarea name="message" rows="2" placeholder="اكتب رسالتك..." class="flex-1 border border-gray-200 rounded-lg p-2 text-sm focus:ring focus:ring-blue-200"></textarea>
-          <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-lg">إرسال</button>
-        </form>
-      {% else %}
-        <div class="text-gray-400 text-sm text-center py-2">
-          {% if c.status == "PENDING" %}
-            لا يمكن إرسال رسائل حتى يتم قبول الاستشارة من الخبير
-          {% else %}
-            هذه الاستشارة مغلقة ولا يمكن إرسال رسائل جديدة
-          {% endif %}
-        </div>
+      {% if not is_admin %}
+        {% if c.status == "ACTIVE" %}
+          <form method="post" class="flex gap-2 mt-3">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="send_message">
+            <textarea name="message" rows="2" placeholder="اكتب رسالتك..." class="flex-1 border border-gray-200 rounded-lg p-2 text-sm focus:ring focus:ring-blue-200"></textarea>
+            <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-lg">إرسال</button>
+          </form>
+        {% else %}
+          <div class="text-gray-400 text-sm text-center py-2">
+            {% if c.status == "PENDING" %}
+              لا يمكن إرسال رسائل حتى يتم قبول الاستشارة من الخبير
+            {% else %}
+              هذه الاستشارة مغلقة ولا يمكن إرسال رسائل جديدة
+            {% endif %}
+          </div>
+        {% endif %}
       {% endif %}
       </div>
     </div>
@@ -106,32 +108,50 @@
 
 <!-- Buttons -->
 <div class="mt-6 flex flex-wrap gap-2 justify-end">
+
+  {# Student: End consultation if ACTIVE #}
   {% if c.student_id == request.user.id and c.status == "ACTIVE" %}
-  <form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="action" value="end_consultation">
-    <button type="submit" class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md shadow-sm">إنهاء الاستشارة</button>
-  </form>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="end_consultation">
+      <button type="submit"
+              class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md shadow-sm">
+        إنهاء الاستشارة
+      </button>
+    </form>
   {% endif %}
 
-  {% if is_expert and c.status in "ACTIVE PENDING" %}
+  {# Expert: End consultation if ACTIVE only #}
+  {% if is_expert and c.status == "ACTIVE" %}
     <form method="post">
       {% csrf_token %}
       <input type="hidden" name="action" value="expert_end">
-      <button type="submit" class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md shadow-sm">إنهاء الاستشارة</button>
+      <button type="submit"
+              class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md shadow-sm">
+        إنهاء الاستشارة
+      </button>
     </form>
   {% endif %}
 
+  {# Expert: Accept or Reject if PENDING #}
   {% if is_expert and c.status == "PENDING" %}
     <form method="post" class="flex gap-2">
       {% csrf_token %}
-      <button name="action" value="expert_accept" class="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white text-sm rounded-md shadow-sm">قبول</button>
-      <button name="action" value="expert_reject" class="px-4 py-1.5 bg-gray-400 hover:bg-gray-500 text-white text-sm rounded-md shadow-sm">رفض</button>
+      <button name="action" value="expert_accept"
+              class="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white text-sm rounded-md shadow-sm">
+        قبول
+      </button>
+      <button name="action" value="expert_reject"
+              class="px-4 py-1.5 bg-gray-400 hover:bg-gray-500 text-white text-sm rounded-md shadow-sm">
+        رفض
+      </button>
     </form>
   {% endif %}
+
 </div>
 
 
+{% if not is_admin %}
 <script>
   (function(){
     const box = document.getElementById('chat-box');
@@ -152,4 +172,5 @@
     setInterval(refreshMessages, 3000);
   })();
 </script>
+{% endif %}
 {% endblock %}

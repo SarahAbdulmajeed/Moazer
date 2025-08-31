@@ -1,0 +1,94 @@
+{% extends 'main/base.html' %}
+{% block title %}قائمه الطلاب{% endblock %}
+
+{% block content %}
+<div class="p-6 space-y-6">
+
+  <!-- Title + Filters -->
+  <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3">
+    <h3 class="text-lg font-semibold">قائمة الطلاب</h3>
+
+    <!-- Filters Form -->
+    <form method="get" class=" items-center gap-2 text-sm flex sm:flex-row flex-col">
+      <!-- Filter by study stage -->
+      <select name="stage" class="border rounded-md p-1.5 text-sm w-full">
+        <option value="">المرحلة الدراسية: الكل</option>
+        {% for value, label in stages %}
+          <option value="{{ value }}" {% if selected_stage == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Filter by city -->
+      <select name="city" class="border rounded-md p-1.5 text-sm w-full">
+        <option value="">المدينة: الكل</option>
+        {% for c in cities %}
+          <option value="{{ c }}" {% if selected_city == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Filter buttons -->
+       <div class="flex flex-row gap-2">
+        <button type="submit" title="Apply Filters" class="bg-black text-white px-3 py-1.5 rounded-md flex items-center">تطبيق </button>
+        <a href="{% url 'accounts:students_view' %}" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md flex items-center">محو</a>
+       </div>
+    </form>
+  </div>
+
+<!-- Students Table -->
+<section class="rounded-lg glass-card-expert text-center">
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead>
+        <tr class="text-gray-600 bg-gray-100">
+          <th class="py-2 pe-3">#</th>
+          <th class="py-2 pe-3">اسم الطالب</th>
+          <th class="py-2 pe-3">الايميل</th>
+          <th class="py-2 pe-3">الجوال</th>
+          <th class="py-2 pe-3">المرحلة الدراسية</th>
+          <th class="py-2 pe-3">المدينة</th>
+          <th class="py-2 pe-3">المحاولات المتبقية</th> <!-- New column -->
+          <th class="py-2 pe-3">انشاء الحساب</th>
+          <th class="py-2">التفاصيل</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in students %}
+          <tr class="border-t border-gray-200">
+            <td class="py-2 pe-3">{{ forloop.counter }}</td>
+            <td class="py-2 pe-3">{{ item.profile.user.get_full_name|default:item.profile.user.username }}</td>
+            <td class="py-2 pe-3">{{ item.profile.user.email }}</td>
+            <td class="py-2 pe-3">{{ item.profile.phone }}</td>
+            <td class="py-2 pe-3">{{ item.profile.get_study_stage_display }}</td>
+            <td class="py-2 pe-3">{{ item.profile.city }}</td>
+            <td class="py-2 pe-3">{{ item.attempts }}</td> <!-- Show attempts -->
+            <td class="py-2 pe-3">{{ item.profile.created_at|date:"Y-m-d" }}</td>
+            <td class="py-2">
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke="currentColor"
+                     class="size-6 mx-auto text-gray-600 hover:text-black transition">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 0 1 0-.639
+                           C3.423 7.51 7.36 4.5 12 4.5
+                           c4.638 0 8.573 3.007 9.963 7.178
+                           .07.207.07.431 0 .639
+                           C20.577 16.49 16.64 19.5 12 19.5
+                           c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15 12a3 3 0 1 1-6 0
+                           3 3 0 0 1 6 0Z" />
+                </svg>
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9" class="py-4 text-gray-500">لا يوجد طلاب.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+{% endblock %}

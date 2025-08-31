@@ -121,14 +121,23 @@
               {% endfor %}
             </div>
           </div>
+          <!-- Price  -->
+          <div>
+            <label class="block text-sm font-medium">قيمة الاستشارة</label>
+            <input type="number" step="0.01" id="consultation_price" name="consultation_price" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] p-2">
+          </div>
+
+          <!-- IBAN -->
+          <div>
+            <label class="block text-sm font-medium">رقم الآيبان</label>
+            <input type="text" name="iban_number" id="iban_number" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] p-2">
+          </div>
         </div>
       </div>
 
+
       <!-- Registration Button -->
-      <button type="submit"
-              class="w-full bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white py-3 rounded-lg shadow mt-4 font-medium">
-        تسجيل
-      </button>
+      <button type="submit" class="w-full bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white py-3 rounded-lg shadow mt-4 font-medium">تسجيل</button>
     </form>
   </div>
 </div>
@@ -138,18 +147,27 @@
   const studentFields = document.getElementById("student-fields");
   const expertFields = document.getElementById("expert-fields");
 
-  function toggleFields() {
-    if (userType.value === "student") {
-      studentFields.classList.remove("hidden");
-      expertFields.classList.add("hidden");
-    } else if (userType.value === "expert") {
-      expertFields.classList.remove("hidden");
-      studentFields.classList.add("hidden");
-    } else {
-      studentFields.classList.add("hidden");
-      expertFields.classList.add("hidden");
-    }
+function toggleFields() {
+  const consultationPrice = document.getElementById("consultation_price");
+  const ibanNumber = document.getElementById("iban_number");
+
+  if (userType.value === "student") {
+    studentFields.classList.remove("hidden");
+    expertFields.classList.add("hidden");
+    consultationPrice.removeAttribute("required");
+    ibanNumber.removeAttribute("required");
+  } else if (userType.value === "expert") {
+    expertFields.classList.remove("hidden");
+    studentFields.classList.add("hidden");
+    consultationPrice.setAttribute("required", "required");
+    ibanNumber.setAttribute("required", "required");
+  } else {
+    studentFields.classList.add("hidden");
+    expertFields.classList.add("hidden");
+    consultationPrice.removeAttribute("required");
+    ibanNumber.removeAttribute("required");
   }
+}
 
   userType.addEventListener("change", toggleFields);
   document.addEventListener("DOMContentLoaded", toggleFields);

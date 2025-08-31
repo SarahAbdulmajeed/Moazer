@@ -1,24 +1,78 @@
 {% extends "main/base.html" %}
+{% block title %}جميع رسائل التواصل{% endblock %}
 
 {% block content %}
-<h1>جميع رسائل التواصل</h1>
+<div class="max-w-6xl mx-auto py-10">
 
-<ul>
-    {% for msg in messages_list %}
-    <li>
-        <strong>الاسم:</strong> {{ msg.name }} <br>
-        <strong>البريد الإلكتروني:</strong> {{ msg.email }} <br>
-        <strong>الرسالة:</strong> {{ msg.message }} <br>
-        <strong>تاريخ الإرسال:</strong> {{ msg.created_at }}
-         <form action="{% url 'contact:reply_message' msg.id %}" method="post">
-            {% csrf_token %}
-            <textarea name="reply_text" rows="3" cols="50" placeholder="الرد على المستخدم.."></textarea><br>
-            <input type="submit" value="رد">
-        </form>
-        <hr>
-    </li>
-    {% empty %}
-    <li>لا توجد رسائل بعد</li>
-    {% endfor %}
-</ul>
+  <!-- Page Title -->
+  <h2 class="text-2xl font-bold mb-6 text-center">جميع رسائل التواصل</h2>
+
+  {% if messages_list %}
+  <section class="rounded-lg glass-card-expert text-center">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-gray-600 bg-gray-100">
+            <th class="py-2 pe-3">#</th>
+            <th class="py-2 pe-3">الاسم</th>
+            <th class="py-2 pe-3">البريد الإلكتروني</th>
+            <th class="py-2 pe-3">الرسالة</th>
+            <th class="py-2 pe-3">التاريخ</th>
+            <th class="py-2">إجراء</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for msg in messages_list %}
+          <tr class="border-t border-gray-200">
+            <td class="py-2 pe-3">{{ forloop.counter }}</td>
+            <td class="py-2 pe-3">{{ msg.name }}</td>
+            <td class="py-2 pe-3">{{ msg.email }}</td>
+            <td class="py-2 pe-3 text-gray-700">{{ msg.message|truncatechars:40 }}</td>
+            <td class="py-2 pe-3">{{ msg.created_at|date:"Y-m-d H:i" }}</td>
+            <td class="py-2">
+              <button type="button" onclick="document.getElementById('replyModal-{{ msg.id }}').classList.remove('hidden')" class="px-3 py-1.5 bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white rounded-lg hover:opacity-90 transition">كتابة رد</button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="py-4 text-gray-500">لا توجد رسائل بعد.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Modals -->
+  {% for msg in messages_list %}
+  <div id="replyModal-{{ msg.id }}" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="relative bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+      
+      <!-- Close Button -->
+      <button onclick="document.getElementById('replyModal-{{ msg.id }}').classList.add('hidden')"
+              class="absolute top-3 right-3 text-gray-600 hover:text-black">✕</button>
+
+      <h4 class="text-lg font-semibold mb-4 text-center">الرد على: {{ msg.name }}</h4>
+
+      <form action="{% url 'contact:reply_message' msg.id %}" method="post" class="space-y-4">
+        {% csrf_token %}
+        <textarea name="reply_text" rows="5" placeholder="اكتب ردك هنا..."
+                  class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+        
+        <div class="flex justify-end">
+          <button type="submit"
+                  class="px-5 py-2 rounded-lg bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] 
+                         text-white font-semibold hover:opacity-90 transition">
+            إرسال الرد
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% else %}
+    <div class="text-center text-gray-500">لا توجد رسائل بعد.</div>
+  {% endif %}
+</div>
 {% endblock %}

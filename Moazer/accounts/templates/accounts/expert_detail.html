@@ -3,14 +3,11 @@
 
 {% block content %}
 
-
-
 <div class="p-4 space-y-12">
     <h2 class="text-2xl font-semibold py-4 mb-4 sm:text-right">الملف الشخصي {{ ex.user.username }}</h2>
-    
     <div class="glass-card-expert bg-white shadow rounded-2xl p-8 max-w-4xl mx-auto space-y-8">
 
-        <!-- صورة واسم -->
+        <!-- Avatar and Name-->
         <div class="flex flex-col items-center text-center">
             <div class="w-28 h-28 rounded-full overflow-hidden bg-gray-200 shadow">
                 <img src="{{ expert.avatar.url }}" alt="avatar" class="object-cover w-full h-full">
@@ -19,7 +16,7 @@
             <p class="text-gray-500">{{ expert.city }}</p>
         </div>
 
-        <!-- معلومات أساسية -->
+        <!-- Main Information  -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-gray-50 rounded-lg p-4">
                 <p class="text-sm text-gray-500">البريد الإلكتروني</p>
@@ -58,7 +55,7 @@
             
         </div>
 
-        <!-- النبذة -->
+        <!-- Bio -->
         {% if expert.bio %}
         <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="text-lg font-semibold mb-2 text-gray-700">نبذة</h3>
@@ -90,11 +87,11 @@
             </div>
         </div>
 
-        <!-- الأزرار -->
+        <!-- Buttons -->
         <div class="flex gap-4 justify-center">
-            {% if user.groups.all.0.name == "Students" %}<a href="#"
-                class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-6 py-2 rounded-lg shadow">حجز
-                استشارة</a>{% endif %}
+            {% if user.groups.all.0.name == "Students" %}
+            <a href="{% url 'consultations:create_view' expert_id=expert.user.id %}" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-6 py-2 rounded-lg shadow">حجزاستشارة</a>
+            {% endif %}
         </div>
 
     </div>

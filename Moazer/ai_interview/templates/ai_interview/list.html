@@ -1,41 +1,84 @@
 {% extends 'main/base.html' %}
 {% block title %}سجل المقابلات{% endblock %}
 {% block content %}
-{% if remaining is not None %}
-  <div class="mb-2 text-sm text-gray-700">محاولاتك المتبقية: <b>{{ remaining }}</b></div>
-{% endif %}
 
-<h4>سجل المقابلات</h4>
-<a href="{% url 'ai_interview:start' %}">ابدأ مقابلة جديدة</a>
+<div class="p-6">
 
-<div>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>رقم المقابلة</th><th>المسمى الوظيفي</th><th>الحالة</th><th>التاريخ</th><th>التفاصيل</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for it in items %}
-        <tr>
-          <td>{{ it.id|stringformat:"03d" }}</td>
-          <td>{{ it.job_title }}</td>
-          <td>{{ it.get_status_display }}</td>
-          <td>{{ it.created_at|date:"Y-m-d H:i" }}</td>
-          <td>
-            {% if it.status == "FINISHED" %}
-              <a href="{% url 'ai_interview:result' it.id %}">عرض النتيجة</a>
-            {% else %}
-              <a href="{% url 'ai_interview:question' it.id 1 %}">أكمل المقابلة</a>
-            {% endif %}
-          </td>
-        </tr>
-      {% empty %}
-        <tr><td>لا توجد مقابلات بعد.</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
+  <!-- Title + Start Button (users only) -->
+  <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3">
+    <h3 class="text-lg font-semibold">
+      {% if is_admin %}جميع المقابلات{% else %}سجل مقابلاتي{% endif %}
+    </h3>
+
+    {% if not is_admin %}
+      <div class="mb-2 text-sm text-gray-700">محاولاتك المتبقية: <b>{{ remaining }}</b></div>
+      <a href="{% url 'ai_interview:start' %}" 
+         class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 rounded-lg hover:opacity-90 transition text-sm">
+        + ابدأ مقابلة جديدة
+      </a>
+    {% endif %}
   </div>
+
+  <!-- Table -->
+  <section class="rounded-lg glass-card-expert text-center">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-gray-600 bg-gray-100">
+            <th class="py-2 pe-3">#</th>
+            {% if is_admin %}
+              <th class="py-2 pe-3">المستخدم</th>
+            {% endif %}
+            <th class="py-2 pe-3">المسمى الوظيفي</th>
+            <th class="py-2 pe-3">الحالة</th>
+            <th class="py-2 pe-3">التاريخ</th>
+            <th class="py-2">التفاصيل</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for it in items %}
+          <tr class="border-t border-gray-200">
+            <td class="py-2 pe-3">{{ it.id|stringformat:"03d" }}</td>
+            
+            {% if is_admin %}
+              <td class="py-2 pe-3">
+                {% if it.user %}
+                  {{ it.user.get_full_name|default:it.user.username }}
+                {% else %}
+                  <span class="text-gray-500">زائر</span>
+                {% endif %}
+              </td>
+            {% endif %}
+            
+            <td class="py-2 pe-3">{{ it.job_title }}</td>
+            <td class="py-2 pe-3">{{ it.get_status_display }}</td>
+            <td class="py-2 pe-3">{{ it.created_at|date:"Y-m-d H:i" }}</td>
+            <td class="py-2">
+              {% if it.status == "FINISHED" %}
+                <a class="" href="{% url 'ai_interview:result' it.id %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                </a>
+              {% else %}
+                <a class="text-black" href="{% url 'ai_interview:question' it.id 1 %}">
+                   متابعة
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if is_admin %}6{% else %}5{% endif %}" class="py-4 text-gray-500">
+              لا توجد مقابلات.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>
+
 {% endblock %}

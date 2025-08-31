@@ -1,54 +1,145 @@
 {% extends "main/base.html" %}
-{% block title %}سجل اختبارات المسار{% endblock %}
+{% block title %}اختر مسارك{% endblock %}
 {% block content %}
-<!-- Authenticated user's session history with remaining attempts. -->
-<div class="max-w-4xl mx-auto py-10">
-  <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold">سجل اختبارات المسار</h2>
-    <div class="grid md:grid-cols-2 gap-6">
-        <a href="{% url 'career_path:start_school' %}" class="block p-6 rounded-xl border hover:shadow">
-          <h3 class="font-semibold mb-2">لطلاب المدارس/الجامعةاختبار جديد </h3>
-          <p class="text-sm text-gray-600">أسئلة عامة تغطي عدة مسارات (تقني، صحي، ..) ثم تعمّق في الأقرب لك.</p>
-        </a>
-    
-        <a href="{% url 'career_path:start_grad' %}" class="block p-6 rounded-xl border hover:shadow">
-          <h3 class="font-semibold mb-2">للمقبلين على الوظيفة/الدراسات العليا اختبار جديد </h3>
-          <p class="text-sm text-gray-600">أدخل تخصصك الجامعي ونحدّد لك المسار الدقيق داخله (مثل أمن، ذكاء اصطناعي...)</p>
-        </a>
-      </div>  </div>
-  <p class="mt-2 text-gray-600">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
 
-  <div class="mt-6">
-    <table class="w-full text-right">
-      <thead>
-        <tr class="text-gray-600">
-          <th class="p-2">#</th>
-          <th class="p-2">الحالة</th>
-          <th class="p-2">المسار المقترح</th>
-          <th class="p-2">التاريخ</th>
-          <th class="p-2">عرض</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in items %}
-        <tr class="border-t">
-          <td class="p-2">{{ it.id|stringformat:"03d" }}</td>
-          <td class="p-2">{{ it.get_status_display }}</td>
-          <td class="p-2">{{ it.suggested_path|default:"—" }}</td>
-          <td class="p-2">{{ it.created_at|date:"Y-m-d H:i" }}</td>
-          <td class="p-2">
-            {% if it.status == "FINISHED" %}
-            <a class="underline" href="{% url 'career_path:result' it.id %}">تفاصيل</a>
-          {% else %}
-            <a class="underline text-blue-600" href="{% url 'career_path:question' it.id 1 %}">متابعة</a>
-          {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td class="p-2 text-gray-500" colspan="5">لا توجد جلسات.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="p-6">
+  {% if not is_admin %}
+  <!-- Services -->
+  <div class="rounded-3xl mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-2  gap-4">
+
+      <!-- #1 -->
+      <div class="bg-[#ffffffa1] rounded-2xl p-4 shadow glass-card h-full flex flex-col">
+        <div class="flex items-center gap-2 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z" /> </svg>
+          <h3 class="font-semibold">لطلاب المدارس/الجامعة</h3>
+        </div>
+        <p class="text-sm text-gray-600">أسئلة عامة تغطي عدة مسارات (تقني، صحي، ..) ثم تعمّق في الأقرب لك.</p>
+        <a href="{% url 'career_path:start_school' %}" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center mt-auto">اختبار جديد</a>
+      </div>
+
+      <!-- #2  -->
+      <div class="bg-[#ffffffa1] rounded-2xl p-4 shadow glass-card h-full flex flex-col">
+        <div class="flex items-center gap-2 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+          </svg>
+          <h3 class="font-semibold">للمقبلين على الوظيفة/الدراسات العليا</h3>
+        </div>
+        <p class="text-sm text-gray-600">أدخل تخصصك الجامعي ونحدّد لك المسار الدقيق داخله (مثل أمن، ذكاء اصطناعي...)</p>
+        <a href="{% url 'career_path:start_grad' %}" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center mt-auto">اختبار جديد</a>
+      </div>
+
+    </div>
   </div>
+
+
+  
+  {% endif %}
+  {% if is_admin %}
+    <!-- Admin View -->
+    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3">
+      <h3 class="text-lg font-semibold">جميع اختبارات المسار</h3>
+      <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
+        <select name="status" class="border rounded-md p-1.5 text-sm">
+          <option value="">الحالة: الكل</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <select name="mode" class="border rounded-md p-1.5 text-sm">
+          <option value="">النوع: الكل</option>
+          {% for value, label in mode_choices %}
+            <option value="{{ value }}" {% if selected_mode == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="bg-black text-white px-3 py-1.5 rounded-md">تطبيق</button>
+        <a href="{% url 'career_path:list' %}" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md">إعادة تعيين</a>
+      </form>
+    </div>
+
+    <section class="rounded-lg glass-card-expert text-center">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-gray-600 bg-gray-100">
+              <th class="py-2 pe-3">#</th>
+              <th class="py-2 pe-3">المستخدم</th>
+              <th class="py-2 pe-3">النوع</th>
+              <th class="py-2 pe-3">الحالة</th>
+              <th class="py-2 pe-3">المسار المقترح</th>
+              <th class="py-2 pe-3">التاريخ</th>
+              <th class="py-2">التفاصيل</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for it in items %}
+            <tr class="border-t border-gray-200">
+              <td class="py-2 pe-3">{{ forloop.counter }}</td>
+              <td class="py-2 pe-3">
+                {% if it.user %}
+                  {{ it.user.get_full_name|default:it.user.username }}
+                {% else %}
+                  <span class="text-gray-500">زائر</span>
+                {% endif %}
+              </td>
+              <td class="py-2 pe-3">{{ it.get_mode_display }}</td>
+              <td class="py-2 pe-3">{{ it.get_status_display }}</td>
+              <td class="py-2 pe-3">{{ it.suggested_path|default:"—" }}</td>
+              <td class="py-2 pe-3">{{ it.created_at|date:"Y-m-d H:i" }}</td>
+              <td class="py-2">
+                <a class="underline text-blue-600" href="{% url 'career_path:result' it.id %}">عرض</a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="py-4 text-gray-500">لا توجد جلسات.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  {% else %}
+  <div class="max-w-full mx-auto py-10">
+    <h2 class="text-lg font-bold mb-2">سجل اختبارات المسار</h2>
+    <p class="mt-2 text-gray-600">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
+
+    <section class="rounded-lg glass-card-expert text-center mt-6">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-gray-600 bg-gray-100">
+              <th class="py-2 pe-3">#</th>
+              <th class="py-2 pe-3">الحالة</th>
+              <th class="py-2 pe-3">المسار المقترح</th>
+              <th class="py-2 pe-3">التاريخ</th>
+              <th class="py-2">التفاصيل</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for it in items %}
+            <tr class="border-t border-gray-200">
+              <td class="py-2 pe-3">{{ it.id|stringformat:"03d" }}</td>
+              <td class="py-2 pe-3">{{ it.get_status_display }}</td>
+              <td class="py-2 pe-3">{{ it.suggested_path|default:"—" }}</td>
+              <td class="py-2 pe-3">{{ it.created_at|date:"Y-m-d H:i" }}</td>
+              <td class="py-2">
+                {% if it.status == "FINISHED" %}
+                  <a class="underline text-blue-600" href="{% url 'career_path:result' it.id %}">تفاصيل</a>
+                {% else %}
+                  <a class="underline text-blue-600" href="{% url 'career_path:question' it.id 1 %}">متابعة</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="py-4 text-gray-500">لا توجد جلسات.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  {% endif %}
+
 </div>
 {% endblock %}

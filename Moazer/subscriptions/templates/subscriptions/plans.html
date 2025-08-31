@@ -1,21 +1,117 @@
 {% extends "main/base.html" %}
 {% block title %}الاشتراكات{% endblock %}
 {% block content %}
-<h3 class="mb-4">الباقات</h3>
 
-<div class="grid gap-3 md:grid-cols-3">
-  {% for p in plans %}
-  <div class="border rounded p-4 bg-white/80">
-    <div class="text-lg font-semibold">{{ p.name }}</div>
-    <div class="mt-1 text-sm">المحاولات: <strong>{{ p.attempts }}</strong></div>
-    <div class="mt-1 text-sm">السعر: <strong>{{ p.price_sar }}</strong> ر.س</div>
-    <a class="inline-block mt-3 px-3 py-1 rounded bg-black text-white"
-       href="{% url 'subscriptions:subscribe' p.id %}">
-       اشترك الآن
-    </a>
+<div class="max-w-6xl mx-auto py-10">
+  <!-- Title + Add Button -->
+  <div class="flex items-center justify-between mb-6">
+    <h3 class="text-2xl font-bold">الباقات</h3>
+    {% if form %}
+    <button onclick="document.getElementById('planModal').classList.remove('hidden')" 
+            class="px-4 py-2 bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white rounded-lg hover:opacity-90 transition">
+      + إضافة باقة
+    </button>
+    {% endif %}
   </div>
-  {% empty %}
-  <div>لا توجد باقات.</div>
-  {% endfor %}
+
+  <!-- Plans Grid -->
+  <div class="grid gap-6 md:grid-cols-3 mb-12">
+{% for p in plans %}
+<div class="bg-white/80 glass-card rounded-2xl p-6 shadow hover:shadow-lg transition flex flex-col">
+  <div class="text-xl font-semibold mb-2">{{ p.name }}</div>
+  <div class="mt-1 text-sm text-gray-600">المحاولات: <strong>{{ p.attempts }}</strong></div>
+  <div class="mt-1 text-sm text-gray-600">السعر: <strong>{{ p.price_sar }}</strong> ر.س</div>
+
+  <div class="mt-2 flex flex-row w-full gap-2 justify-end">
+    {% if user.groups.all.0.name == 'Students' %}
+      <a class="px-4 py-2 rounded-lg bg-black text-white text-center hover:bg-gray-800 transition w-full"
+         href="{% url 'subscriptions:subscribe' p.id %}">اشترك الآن</a>
+    {% endif %}
+
+    {% if is_admin %}
+      <!-- Delete Button -->
+      <button type="button"
+              onclick="document.getElementById('deleteModal-{{ p.id }}').classList.remove('hidden')"
+              class="px-4 py-2 rounded-lg bg-red-500 text-white text-center hover:bg-red-700 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mx-auto">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21 c.342.052.682.107 1.022.166m-1.022-.165 L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084 a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79 m14.456 0a48.108 48.108 0 0 0-3.478-.397 m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201 a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+        </svg>
+      </button>
+    {% endif %}
+  </div>
 </div>
+
+<!-- Delete Modal -->
+<div id="deleteModal-{{ p.id }}" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+    <!-- Close Button -->
+    <button type="button"
+            onclick="document.getElementById('deleteModal-{{ p.id }}').classList.add('hidden')"
+            class="absolute top-3 right-3 text-gray-600 hover:text-black">✕</button>
+
+    <h3 class="text-lg font-semibold mb-4 text-center">تأكيد الحذف</h3>
+    <p class="text-center text-gray-600 mb-6">
+      هل أنت متأكد أنك تريد حذف الباقة <span class="font-semibold">({{ p.name }})</span>؟
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-center gap-4">
+      <button type="button"
+              onclick="document.getElementById('deleteModal-{{ p.id }}').classList.add('hidden')"
+              class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">إلغاء</button>
+
+      <form method="post" action="{% url 'subscriptions:delete' p.id %}">
+        {% csrf_token %}
+        <button type="submit"
+                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+          حذف
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+  </div>
+
+{% if form %}
+  <!-- Modal -->
+<div id="planModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+  <div class="relative bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <!-- Close Button -->
+    <button onclick="document.getElementById('planModal').classList.add('hidden')" class="absolute top-3 right-3 text-gray-600 hover:text-black">✕</button>
+
+    <h4 class="text-lg font-semibold mb-4 text-center">إضافة باقة جديدة</h4>
+
+    <form method="post" class="space-y-4 ">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">اسم الباقة</label>
+        {{ form.name }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">المحاولات</label>
+        {{ form.attempts }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">السعر (ر.س)</label>
+        {{ form.price_sar }}
+      </div>
+      <button class="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">إضافة</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+</div>
+
+
+
+<!-- Optional animation -->
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+</style>
+
 {% endblock %}

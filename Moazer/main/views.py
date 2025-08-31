@@ -19,3 +19,5 @@ def home_view(request: HttpRequest):
 def about_us_view(request: HttpRequest):
     return render(request, "main/about_us.html")
 
+def error_view(request: HttpRequest):
+    return render(request, "main/error.html")

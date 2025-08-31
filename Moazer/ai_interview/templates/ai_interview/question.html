@@ -1,22 +1,49 @@
-{% extends 'main/base.html' %}
+{% extends "main/base.html" %}
 {% block title %}السؤال {{ step }}{% endblock %}
 {% block content %}
-<div>
-  <h3>المقابلة الافتراضية AI</h3>
-  <div>({{ s.job_title }})</div>
-  <small>السؤال رقم ({{ step }}) من ({{ total }})</small>
-</div>
+<!-- Single-question screen with modern card style -->
 
-<div>
-  <h5>“ {{ q.text }} ”</h5>
-  <form method="post">{% csrf_token %}
-    <textarea name="answer" rows="7" placeholder="إجابتك...">{{ prev_answer }}</textarea>
-    <div class="d-flex gap-2">
-      {% if step > 1 %}
-        <a href="{% url 'ai_interview:question' s.id step|add:'-1' %}">رجوع</a>
-      {% endif %}
-      <button>التالي</button>
-    </div>
-  </form>
+<div class="h-full flex items-center justify-center">
+  <div class="bg-white/80 rounded-2xl shadow p-8 w-full max-w-3xl glass-card">
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center mb-3">المقابلة الافتراضية AI</h2>
+    <p class="text-center text-gray-600 mb-2 text-sm">({{ s.job_title }})</p>
+
+    <!-- Progress -->
+    <p class="text-center text-sm mb-6">
+      السؤال رقم <b>{{ step }}</b> من <b>{{ total }}</b>
+    </p>
+
+    <!-- Question -->
+    <p class="text-lg font-medium text-gray-800 mb-6 text-center">“ {{ q.text }} ”</p>
+
+    <!-- Form -->
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm text-gray-600 mb-2 font-semibold">إجابتك:</label>
+        <textarea name="answer" rows="6"
+                  class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="اكتب إجابتك هنا...">{{ prev_answer }}</textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-between">
+        {% if step > 1 %}
+        <a href="{% url 'ai_interview:question' s.id step|add:'-1' %}"
+           class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">
+          رجوع
+        </a>
+        {% else %}
+        <span></span>
+        {% endif %}
+        
+        <button class="px-6 py-2 rounded-lg bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] 
+                       text-white font-semibold hover:opacity-90 transition">
+          التالي
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

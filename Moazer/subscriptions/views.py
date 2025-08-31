@@ -1,17 +1,34 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Plan
 from .services import grant_plan
+from .forms import PlanForm
 
 @login_required
 def plans_view(request):
     """
-    Show available plans. For now, clicking "subscribe" will grant attempts directly.
-    Later you swap the button to go to a checkout page and call grant_plan after success.
+    Show available plans. If admin: allow adding new plans directly.§
     """
     plans = Plan.objects.order_by("price_sar")
-    return render(request, "subscriptions/plans.html", {"plans": plans})
+
+    form = None
+    if request.user.is_staff:
+        if request.method == "POST":
+            form = PlanForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "تمت إضافة الباقة بنجاح.")
+                return redirect("subscriptions:plans")
+        else:
+            form = PlanForm()
+
+    return render(request, "subscriptions/plans.html", {
+        "plans": plans,
+        "form": form,
+        "is_admin": request.user.is_staff,
+    })
 
 @login_required
 def subscribe_view(request, plan_id: int):
@@ -22,4 +39,15 @@ def subscribe_view(request, plan_id: int):
     plan = get_object_or_404(Plan, pk=plan_id)
     grant_plan(request.user, plan)
     messages.success(request, f"تم إضافة {plan.attempts} محاولة إلى محفظتك.")
+    return redirect("subscriptions:plans")
+
+
+@staff_member_required
+def delete_plan_view(request, plan_id: int):
+    """
+    Admin-only: delete a subscription plan.
+    """
+    plan = get_object_or_404(Plan, pk=plan_id)
+    plan.delete()
+    messages.success(request, f"تم حذف الباقة ({plan.name}) بنجاح.")
     return redirect("subscriptions:plans")

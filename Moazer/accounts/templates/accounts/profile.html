@@ -1,93 +1,166 @@
 {% extends "main/base.html" %}
 {% load static %}
 
+{% block title %} تعديل الملف الشخصي {% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="p-6 space-y-12">
+    
+    {% if not user.is_authenticated %}
+        <h2 class="text-center text-xl font-semibold text-gray-600">مرحبا بالزائر</h2>
+        <p class="text-center text-gray-500">الرجاء تسجيل الدخول لعرض البروفايل.</p>
+    {% else %}
 
-{% if not user.is_authenticated %}
-    <h2>مرحبا بالزائر</h2>
-    <p>الرجاء تسجيل الدخول لعرض البروفايل.</p>
-
-{% else %}
-    <h2>
-        {% if profile_type == "student" %}بروفايل الطالب{% else %}بروفايل الخبير{% endif %}
+    <h2 class="text-2xl font-semibold py-4 mb-4 text-center">
+        {% if profile_type == "student" %} حسابك كطالب {% else %} حسابك كخبير {% endif %}
     </h2>
 
-    
-    <form method="post" enctype="multipart/form-data" action="{% url 'accounts:profile' %}">
+    <form method="post" enctype="multipart/form-data" action="{% url 'accounts:profile' %}" 
+          class="glass-card-expert bg-white shadow rounded-2xl p-8 max-w-4xl mx-auto space-y-8">
         {% csrf_token %}
-        <label>الاسم الأول</label>
-        <input type="text" name="first_name" value="{{ user.first_name }}" required>
 
-        <label>الاسم الأخير</label>
-        <input type="text" name="last_name" value="{{ user.last_name }}" required>
+        <!-- Avatar -->
+        <div class="flex flex-col items-center text-center">
+            <div class="w-28 h-28 rounded-full overflow-hidden bg-gray-200 shadow">
+                <img src="{{ profile.avatar.url }}" alt="avatar" class="object-cover w-full h-full">
+            </div>
+            <label class="mt-4 text-sm text-gray-600">تغيير الصورة</label>
+            <input type="file" name="avatar" class="mt-2 text-sm">
+        </div>
 
-        <label>البريد الإلكتروني</label>
-        <input type="email" name="email" value="{{ user.email }}" required>
+        <!-- Main Data -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <label class="text-sm text-gray-500">الاسم الأول</label>
+                <input type="text" name="first_name" value="{{ user.first_name }}"
+                       class="w-full border rounded-lg px-2 py-1">
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <label class="text-sm text-gray-500">الاسم الأخير</label>
+                <input type="text" name="last_name" value="{{ user.last_name }}"
+                       class="w-full border rounded-lg px-2 py-1">
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <label class="text-sm text-gray-500">البريد الإلكتروني</label>
+                <input type="email" name="email" value="{{ user.email }}"
+                       class="w-full border rounded-lg px-2 py-1">
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <label class="text-sm text-gray-500">رقم الجوال</label>
+                <input type="text" name="phone" value="{{ profile.phone }}"
+                       class="w-full border rounded-lg px-2 py-1">
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <label class="text-sm text-gray-500">تاريخ الميلاد</label>
+                <input type="date" name="birth_date" value="{{ profile.birth_date|date:'Y-m-d' }}"
+                       class="w-full border rounded-lg px-2 py-1">
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <label class="text-sm text-gray-500">الجنس</label>
+                <select name="gender" class="w-full border rounded-lg px-2 py-1">
+                    <option value="male" {% if profile.gender == "male" %}selected{% endif %}>ذكر</option>
+                    <option value="female" {% if profile.gender == "female" %}selected{% endif %}>أنثى</option>
+                </select>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <label class="text-sm text-gray-500">المدينة</label>
+                <input type="text" name="city" value="{{ profile.city }}"
+                       class="w-full border rounded-lg px-2 py-1">
+            </div>
+        </div>
 
-        <label>تاريخ الميلاد</label>
-        <input type="date" name="birth_date" value="{{ profile.birth_date|date:'Y-m-d' }}" required>
+        <!-- Description -->
+        <div class="bg-gray-50 rounded-lg p-4">
+            <label class="text-sm text-gray-500">نبذة</label>
+            <textarea name="bio" rows="3" class="w-full border rounded-lg px-2 py-1">{{ profile.bio }}</textarea>
+        </div>
 
-        <label>الجنس</label>
-        <select name="gender" required>
-            <option value="male" {% if profile.gender == 'male' %}selected{% endif %}>ذكر</option>
-            <option value="female" {% if profile.gender == 'female' %}selected{% endif %}>أنثى</option>
-        </select>
-
-        <label>رقم الجوال</label>
-        <input type="text" name="phone" value="{{ profile.phone }}" required>
-
-        <label>المدينة</label>
-        <input type="text" name="city" value="{{ profile.city }}" required>
-
-        <label>نبذة عن {{ profile_type|title }}</label>
-        <textarea name="bio" required>{{ profile.bio }}</textarea>
-
+        <!-- Student Property -->
         {% if profile_type == "student" %}
-            <label>مرحلة الدراسة</label>
-            <select name="study_stage" required>
+        <div class="bg-gray-50 rounded-lg p-4">
+            <label class="text-sm text-gray-500">مرحلة الدراسة</label>
+            <select name="study_stage" class="w-full border rounded-lg px-2 py-1">
                 <option value="middle" {% if profile.study_stage == "middle" %}selected{% endif %}>المتوسطة</option>
                 <option value="high" {% if profile.study_stage == "high" %}selected{% endif %}>الثانوية</option>
                 <option value="diploma" {% if profile.study_stage == "diploma" %}selected{% endif %}>الدبلوم</option>
                 <option value="bachelor" {% if profile.study_stage == "bachelor" %}selected{% endif %}>البكالوريوس</option>
             </select>
-        {% else %}
-            <label>التخصصات</label>
-            <select name="specializations" multiple required>
-                {% for s in all_specializations %}
-                    <option value="{{ s.id }}" {% if s in profile.specializations.all %}selected{% endif %}>{{ s.name }}</option>
-                {% endfor %}
-            </select>
-
-            <label>أنواع الاستشارات</label>
-            <select name="consultation_types" multiple required>
-                {% for c in all_consultation_types %}
-                    <option value="{{ c.id }}" {% if c in profile.consultation_types.all %}selected{% endif %}>{{ c.name }}</option>
-                {% endfor %}
-            </select>
-
-            <label>قيمة الاستشارة</label>
-            <input type="number" step="0.01" name="consultation_fee" value="{{ profile.consultation_fee }}" required>
-
-            <label>رقم الآيبان</label>
-            <input type="text" name="iban_number" value="{{ profile.iban_number }}" required>
+        </div>
         {% endif %}
-{% if profile.avatar %}
-    <label>الصورة الحالية</label><br>
-    <img src="{{ profile.avatar.url }}" alt="Avatar" width="150" height="150"><br><br>
-{% endif %}
 
-<label>تغيير الصورة</label>
-<input type="file" name="avatar">
-        <button type="submit">حفظ التغييرات</button>
+        <!-- Expert Property  -->
+        {% if profile_type == "expert" %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Specializations -->
+        <div class="bg-gray-50 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-2">التخصصات</label>
+            <div class="space-y-1 max-h-40 overflow-y-auto rounded-lg border border-gray-300 p-2 bg-white">
+            {% for s in all_specializations %}
+                <label class="flex items-center gap-2">
+                <input type="checkbox" name="specializations" value="{{ s.id }}"
+                        class="rounded border-gray-400"
+                        {% if s in profile.specializations.all %}checked{% endif %}>
+                <span>{{ s.name }}</span>
+                </label>
+            {% empty %}
+                <p class="text-gray-400 text-sm">لا يوجد تخصصات حالياً</p>
+            {% endfor %}
+            </div>
+        </div>
+
+        <!-- Consultation Types -->
+        <div class="bg-gray-50 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-2">أنواع الاستشارات</label>
+            <div class="space-y-1 max-h-40 overflow-y-auto rounded-lg border border-gray-300 p-2 bg-white">
+            {% for c in all_consultation_types %}
+                <label class="flex items-center gap-2">
+                <input type="checkbox" name="consultation_types" value="{{ c.id }}"
+                        class="rounded border-gray-400"
+                        {% if c in profile.consultation_types.all %}checked{% endif %}>
+                <span>{{ c.name }}</span>
+                </label>
+            {% empty %}
+                <p class="text-gray-400 text-sm">لا يوجد استشارات حالياً</p>
+            {% endfor %}
+            </div>
+        </div>
+
+        </div>
+
+        <!-- Consultation Price + IBAN -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div class="bg-gray-50 rounded-lg p-4">
+            <label class="text-sm text-gray-500">قيمة الاستشارة</label>
+            <input type="number" step="0.01" name="consultation_price" 
+                value="{{ profile.consultation_price }}" 
+                class="w-full border rounded-lg px-2 py-1">
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+            <label class="text-sm text-gray-500">رقم الآيبان</label>
+            <input type="text" name="iban_number" value="{{ profile.iban_number }}"
+                class="w-full border rounded-lg px-2 py-1">
+        </div>
+        </div>
+        {% endif %}
+
+
+        <!-- Buttons -->
+        <div class="flex gap-4 justify-center">
+            <button type="submit" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-6 py-2 rounded-lg shadow">
+                حفظ التغييرات
+            </button>
+        </div>
     </form>
 
-    
-    <form method="post" action="{% url 'accounts:delete_profile' %}" style="margin-top:20px;">
+    <!-- Delete Account Button -->
+    <form method="post" action="{% url 'accounts:delete_profile' %}" class="max-w-4xl mx-auto mt-6 text-center">
         {% csrf_token %}
-        <button type="submit" class="delete">حذف الحساب</button>
+        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg shadow">
+            حذف الحساب
+        </button>
     </form>
 
-{% endif %}
+    {% endif %}
 </div>
 {% endblock %}

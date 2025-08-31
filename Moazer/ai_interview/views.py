@@ -21,13 +21,24 @@ from subscriptions.services import (
 @login_required
 def list_view(request):
     """
-    List previous interview sessions for the current user.
-    Also show remaining attempts (read-only) just for convenience.
+    Show interview sessions:
+    - If admin/staff: show all sessions (for all users/guests).
+    - If normal user: show only their sessions + remaining attempts.
     """
-    items = InterviewSession.objects.filter(user=request.user).order_by("-created_at")
-    remaining = get_remaining_attempts(request.user)  # int or None
-    return render(request, "ai_interview/list.html", {"items": items, "remaining": remaining})
+    if request.user.is_staff:
+        items = InterviewSession.objects.select_related("user").order_by("-created_at")
+        remaining = None  # Admins don't have attempt counters
+        is_admin = True
+    else:
+        items = InterviewSession.objects.filter(user=request.user).order_by("-created_at")
+        remaining = get_remaining_attempts(request.user)
+        is_admin = False
 
+    return render(request, "ai_interview/list.html", {
+        "items": items,
+        "remaining": remaining,
+        "is_admin": is_admin,
+    })
 
 def start_view(request):
     """
