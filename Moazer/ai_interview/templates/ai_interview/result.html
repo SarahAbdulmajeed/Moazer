@@ -1,5 +1,7 @@
 {% extends "main/base.html" %}
-{% block title %}النتيجة{% endblock %}
+{% block title %}المقابلة الافتراضية AI - النتيجة{% endblock %}
+{% block background %}bg-gradient-to-t from-transparent to-[#8ccfbb]/50{% endblock %}
+{% block ai_interview_nav %} font-semibold {% endblock %}
 {% block content %}
 <!-- Final result: interview summary + insights + Q/A log -->
 <div class="max-w-4xl mx-auto py-10">
@@ -11,9 +13,9 @@
   <!-- Info + Summary -->
   <div class="grid md:grid-cols-2 gap-6">
     <!-- Info Card -->
-    <div class="bg-white/80 rounded-2xl p-6 shadow">
-      <h3 class="font-semibold mb-3">معلومات المقابلة</h3>
-      <div class="space-y-2 text-sm">
+    <div class="bg-white/80 rounded-lg shadow">
+      <h3 class="font-semibold rounded-t-lg p-2 text-center bg-[#002f22] text-white mb-4">معلومات المقابلة</h3>
+      <div class="space-y-2 p-4 text-sm">
         <div class="flex justify-between"><span class="text-gray-600">رقم المقابلة</span><span>{{ s.id|stringformat:"03d" }}</span></div>
         <div class="flex justify-between"><span class="text-gray-600">المسمى الوظيفي</span><span>{{ s.job_title }}</span></div>
         <div class="flex justify-between"><span class="text-gray-600">الحالة</span><span>{{ s.get_status_display }}</span></div>
@@ -24,17 +26,17 @@
     </div>
 
     <!-- Summary Card -->
-    <div class="bg-white/80 rounded-2xl p-6 shadow">
-      <h3 class="font-bold mb-3">الملخص</h3>
-      <div class="mb-3 text-sm">
+    <div class="bg-white/80 rounded-lg shadow">
+      <h3 class="font-semibold rounded-t-lg p-2 text-center bg-[#002f22] text-white mb-4">ملخص</h3>
+      <div class="p-4 text-sm">
         <div class="text-gray-600 mb-1 font-bold">نقاط القوة</div>
         <div>{{ s.strengths|default:"—" }}</div>
       </div>
-      <div class="mb-3 text-sm">
+      <div class="p-4 text-sm">
         <div class="text-gray-600 mb-1 font-bold">نقاط بحاجة لتطوير</div>
         <div>{{ s.weaknesses|default:"—" }}</div>
       </div>
-      <div class="text-sm">
+      <div class="p-4 text-sm">
         <div class="text-gray-600 mb-1 font-bold">التوصية</div>
         <div>{{ s.recommendation|default:"—" }}</div>
       </div>
@@ -42,12 +44,12 @@
   </div>
 
   <!-- Q/A Log -->
-  <h3 class="font-semibold mt-10 mb-3">سجل الأسئلة والإجابات</h3>
-<div class="bg-white/80 rounded-2xl p-6 shadow space-y-4">
+  <div class="bg-white/80 mt-6 rounded-lg shadow space-y-4">
+    <h3 class="font-semibold rounded-t-lg p-2 text-center bg-[#002f22] text-white mb-4">سجل الأسئلة والإجابات</h3>
   {% for a in answers %}
-    <div class="border-b pb-4 last:border-0 last:pb-0 border-gray-300">
+      <div class="px-6 py-2 text-sm border-b-1 border-gray-200">
       <!-- السؤال -->
-      <div class="flex justify-between items-center mb-3">
+      <div class="flex justify-between items-center mb-3 ">
         <span class="text-gray-800 font-semibold">س{{ a.question.order }}: {{ a.question.text }}</span>
         <span class="text-sm text-gray-600">
           التقييم: {% if a.score %}  {{ a.score }} / 5 {% else %} — {% endif %}
@@ -67,7 +69,7 @@
       </div>
 
       <!-- نقاط الضعف -->
-      <div class="p-3 bg-red-50 rounded-lg">
+      <div class="p-3 bg-red-50 rounded-lg mb-4">
         <span class="block text-sm font-semibold text-red-700 mb-1"> نقاط الضعف:</span>
         <p class="text-gray-800">{{ a.weaknesses|default:"—" }}</p>
       </div>

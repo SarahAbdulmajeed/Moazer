@@ -1,5 +1,8 @@
 {% extends 'main/base.html' %}
 {% block title %} الخبراء {% endblock %}
+{% block background %}bg-gradient-to-t from-transparent to-[#f9dc85]/50{% endblock %}
+{% block experts_nav %} font-semibold {% endblock %}
+{% block consultation_nav %} font-semibold {% endblock %}
 
 {% block content %}
 <div class="p-6 space-y-12">
@@ -11,7 +14,7 @@
             <!-- Filter Form for Approved Experts -->
             <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
                 <!-- Specialization Filter -->
-                <select name="specialization_approved" class="border rounded-md p-1.5 text-sm">
+                <select name="specialization_approved" class="border rounded-md p-1.5 text-sm bg-white">
                     <option value="">التخصص: الكل</option>
                     {% for spec in specializations %}
                         <option value="{{ spec.id }}" {% if selected_spec == spec.id|stringformat:"s" %}selected{% endif %}>
@@ -20,7 +23,7 @@
                     {% endfor %}
                 </select>
                 <!-- Consultation Type Filter -->
-                <select name="consultation_approved" class="border rounded-md p-1.5 text-sm">
+                <select name="consultation_approved" class="border rounded-md p-1.5 text-sm bg-white">
                     <option value="">نوع الاستشارة: الكل</option>
                     {% for consult in consultation_types %}
                         <option value="{{ consult.id }}" {% if selected_consult == consult.id|stringformat:"s" %}selected{% endif %}>
@@ -29,7 +32,7 @@
                     {% endfor %}
                 </select>
                 <!-- Filter Button -->
-                <button type="submit" class="bg-black text-white px-3 py-1.5 rounded-md">فلتره</button>
+                <button type="submit" class="bg-[#392a00] text-white px-3 py-1.5 rounded-md">فلتره</button>
             </form>
         </div>
 
@@ -52,7 +55,7 @@
             <h2 class="text-lg font-semibold sm:text-right">الخبراء غير المفعلين</h2>
             <!-- Filter Form for Pending Experts -->
             <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
-                <select name="specialization_pending" class="border rounded-md p-1.5 text-sm">
+                <select name="specialization_pending" class="border rounded-md p-1.5 text-sm bg-white">
                     <option value="">التخصص: الكل</option>
                     {% for spec in specializations %}
                         <option value="{{ spec.id }}" {% if selected_spec_p == spec.id|stringformat:"s" %}selected{% endif %}>
@@ -60,7 +63,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <select name="consultation_pending" class="border rounded-md p-1.5 text-sm">
+                <select name="consultation_pending" class="border rounded-md p-1.5 text-sm bg-white">
                     <option value="">نوع الاستشارة: الكل</option>
                     {% for consult in consultation_types %}
                         <option value="{{ consult.id }}" {% if selected_consult_p == consult.id|stringformat:"s" %}selected{% endif %}>
@@ -68,7 +71,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <button type="submit" class="bg-black text-white px-3 py-1.5 rounded-md">فلتره</button>
+                <button type="submit" class="bg-[#392a00] text-white px-3 py-1.5 rounded-md">فلتره</button>
             </form>
         </div>
 
@@ -92,7 +95,7 @@
             <h2 class="text-lg font-semibold sm:text-right">الخبراء المحذوفون</h2>
             <!-- Filter Form for Deleted Experts -->
             <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
-                <select name="specialization_deleted" class="border rounded-md p-1.5 text-sm">
+                <select name="specialization_deleted" class="border rounded-md p-1.5 text-sm bg-white">
                     <option value="">التخصص: الكل</option>
                     {% for spec in specializations %}
                         <option value="{{ spec.id }}" {% if selected_spec_d == spec.id|stringformat:"s" %}selected{% endif %}>
@@ -100,7 +103,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <select name="consultation_deleted" class="border rounded-md p-1.5 text-sm">
+                <select name="consultation_deleted" class="border rounded-md p-1.5 text-sm bg-white">
                     <option value="">نوع الاستشارة: الكل</option>
                     {% for consult in consultation_types %}
                         <option value="{{ consult.id }}" {% if selected_consult_d == consult.id|stringformat:"s" %}selected{% endif %}>
@@ -108,7 +111,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <button type="submit" class="bg-black text-white px-3 py-1.5 rounded-md">فلتره</button>
+                <button type="submit" class="bg-[#392a00] text-white px-3 py-1.5 rounded-md">فلتره</button>
             </form>
         </div>
 

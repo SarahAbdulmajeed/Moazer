@@ -1,6 +1,7 @@
 {% extends "main/base.html" %}
 {% block title %}مختصر — الاستشارات + الخبراء{% endblock %}
-
+{% block background %}bg-gradient-to-t from-transparent to-[#f9dc85]/50{% endblock %}
+{% block consultation_nav %} font-semibold {% endblock %}
 {% block content %}
 
 <div class="p-4 space-y-8">
@@ -15,9 +16,9 @@
       </svg>
     </div>
   </div>
-  <section class="rounded-lg glass-card-expert text-center">
+  <section class="rounded-lg text-center">
     <div class="overflow-x-auto">
-      <table class="min-w-full text-sm">
+      <table class="min-w-full text-sm bg-white">
         <thead>
           <tr class="text-gray-600 bg-gray-100">
             <th class="py-2 pe-3">رقم</th>
@@ -88,7 +89,7 @@
 
   <section>
     {% if experts_preview %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {% for ex in experts_preview %}
       {% include "accounts/components/expert_card.html" with expert=ex %}
       {% endfor %}

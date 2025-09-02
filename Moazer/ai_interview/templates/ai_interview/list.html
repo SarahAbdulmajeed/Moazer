@@ -1,5 +1,8 @@
 {% extends 'main/base.html' %}
+{% load static %}
 {% block title %}سجل المقابلات{% endblock %}
+{% block background %}bg-gradient-to-t from-transparent to-[#8ccfbb]/50{% endblock %}
+{% block ai_interview_nav %} font-semibold {% endblock %}
 {% block content %}
 
 <div class="p-6">
@@ -13,7 +16,7 @@
     {% if not is_admin %}
       <div class="mb-2 text-sm text-gray-700">محاولاتك المتبقية: <b>{{ remaining }}</b></div>
       <a href="{% url 'ai_interview:start' %}" 
-         class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 rounded-lg hover:opacity-90 transition text-sm">
+         class="bg-[#002f22] text-white px-4 py-2 rounded-lg hover:opacity-90 transition text-sm">
         + ابدأ مقابلة جديدة
       </a>
     {% endif %}
@@ -25,23 +28,23 @@
       <table class="min-w-full text-sm">
         <thead>
           <tr class="text-gray-600 bg-gray-100">
-            <th class="py-2 pe-3">#</th>
+            <th class="py-2">#</th>
             {% if is_admin %}
-              <th class="py-2 pe-3">المستخدم</th>
+              <th class="py-2">المستخدم</th>
             {% endif %}
-            <th class="py-2 pe-3">المسمى الوظيفي</th>
-            <th class="py-2 pe-3">الحالة</th>
-            <th class="py-2 pe-3">التاريخ</th>
+            <th class="py-2">المسمى الوظيفي</th>
+            <th class="py-2">التاريخ</th>
+            <th class="py-2">الحالة</th>
             <th class="py-2">التفاصيل</th>
           </tr>
         </thead>
         <tbody>
           {% for it in items %}
-          <tr class="border-t border-gray-200">
-            <td class="py-2 pe-3">{{ it.id|stringformat:"03d" }}</td>
+          <tr class="border-t border-gray-200 bg-white">
+            <td class="py-2 ">{{ it.id|stringformat:"03d" }}</td>
             
             {% if is_admin %}
-              <td class="py-2 pe-3">
+              <td class="py-2 ">
                 {% if it.user %}
                   {{ it.user.get_full_name|default:it.user.username }}
                 {% else %}
@@ -50,20 +53,22 @@
               </td>
             {% endif %}
             
-            <td class="py-2 pe-3">{{ it.job_title }}</td>
-            <td class="py-2 pe-3">{{ it.get_status_display }}</td>
-            <td class="py-2 pe-3">{{ it.created_at|date:"Y-m-d H:i" }}</td>
+            <td class="py-2">{{ it.job_title }}</td>
+            <td class="py-2">{{ it.created_at|date:"Y-m-d H:i" }}</td>
+            <td class="py-2">{{ it.get_status_display }}</td>
             <td class="py-2">
               {% if it.status == "FINISHED" %}
-                <a class="" href="{% url 'ai_interview:result' it.id %}">
+                <a class="flex items-center justify-center" href="{% url 'ai_interview:result' it.id %}">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                   </svg>
                 </a>
               {% else %}
-                <a class="text-black" href="{% url 'ai_interview:question' it.id 1 %}">
-                   متابعة
+                <a class="flex items-center justify-center" href="{% url 'ai_interview:question' it.id 1 %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                  </svg>
                 </a>
               {% endif %}
             </td>

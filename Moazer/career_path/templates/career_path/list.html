@@ -1,66 +1,72 @@
 {% extends "main/base.html" %}
+{% load static %}
 {% block title %}اختر مسارك{% endblock %}
+{% block background %}bg-gradient-to-t from-transparent to-[#8ec8fa]/50{% endblock %}
+{% block career_path_nav %} font-semibold {% endblock %}
 {% block content %}
-
-<div class="p-6">
+<div>
   {% if not is_admin %}
-  <!-- Services -->
-  <div class="rounded-3xl mt-6">
-    <div class="grid grid-cols-1 md:grid-cols-2  gap-4">
+<!-- Services (for guests only) -->
+<div class="flex items-center justify-center content-center h-full">
+  <div class="max-w-5xl mx-auto content-center h-full">
+    <h3 class="text-lg font-semibold pt-4">اختر مسارك</h3>
+    <p class="my-4 text-gray-600">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
 
-      <!-- #1 -->
-      <div class="bg-[#ffffffa1] rounded-2xl p-4 shadow glass-card h-full flex flex-col">
-        <div class="flex items-center gap-2 mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z" /> </svg>
-          <h3 class="font-semibold">لطلاب المدارس/الجامعة</h3>
-        </div>
-        <p class="text-sm text-gray-600">أسئلة عامة تغطي عدة مسارات (تقني، صحي، ..) ثم تعمّق في الأقرب لك.</p>
-        <a href="{% url 'career_path:start_school' %}" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center mt-auto">اختبار جديد</a>
-      </div>
-
-      <!-- #2  -->
-      <div class="bg-[#ffffffa1] rounded-2xl p-4 shadow glass-card h-full flex flex-col">
-        <div class="flex items-center gap-2 mb-2">
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- #1 School/University -->
+      <div class="bg-white/50 rounded-lg p-6 shadow h-full flex flex-col">
+        <div class="flex items-center gap-2 mb-3">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
           </svg>
-          <h3 class="font-semibold">للمقبلين على الوظيفة/الدراسات العليا</h3>
+          <h3 class="font-semibold text-lg">طلاب المدارس/الجامعة</h3>
         </div>
-        <p class="text-sm text-gray-600">أدخل تخصصك الجامعي ونحدّد لك المسار الدقيق داخله (مثل أمن، ذكاء اصطناعي...)</p>
-        <a href="{% url 'career_path:start_grad' %}" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center mt-auto">اختبار جديد</a>
+        <p class="text-sm text-gray-600 mb-4">أسئلة عامة تغطي عدة مسارات (تقني، صحي، ..) ثم تعمّق في الأقرب لك.</p>
+        <a href="{% url 'career_path:start_school' %}" class="bg-[#002c52] text-white px-4 py-2 mt-auto rounded-lg text-center">اختبار جديد</a>
       </div>
-
+      <!-- #2 Graduates -->
+      <div class="bg-white/50 rounded-lg p-6 shadow h-full flex flex-col">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+            </svg>
+          </div>
+          <h3 class="font-semibold text-lg">للمقبلين على الوظيفة/الدراسات العليا</h3>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">أدخل تخصصك الجامعي ونحدّد لك المسار الدقيق داخله (مثل أمن، ذكاء اصطناعي...)</p>
+        <a href="{% url 'career_path:start_grad' %}" class="bg-[#002c52] text-white px-4 py-2 mt-auto rounded-lg text-center">اختبار جديد</a>
+      </div>
     </div>
   </div>
-
-
-  
+</div>
   {% endif %}
   {% if is_admin %}
+  <div class="p-6">
     <!-- Admin View -->
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3">
       <h3 class="text-lg font-semibold">جميع اختبارات المسار</h3>
       <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
-        <select name="status" class="border rounded-md p-1.5 text-sm">
+        <select name="status" class="border rounded-md p-1.5 text-sm bg-white pl-8">
           <option value="">الحالة: الكل</option>
           {% for value, label in status_choices %}
             <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
           {% endfor %}
         </select>
-        <select name="mode" class="border rounded-md p-1.5 text-sm">
+        <select name="mode" class="border rounded-md p-1.5 text-sm bg-white">
           <option value="">النوع: الكل</option>
           {% for value, label in mode_choices %}
             <option value="{{ value }}" {% if selected_mode == value %}selected{% endif %}>{{ label }}</option>
           {% endfor %}
         </select>
-        <button type="submit" class="bg-black text-white px-3 py-1.5 rounded-md">تطبيق</button>
-        <a href="{% url 'career_path:list' %}" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md">إعادة تعيين</a>
+        <button type="submit" class="bg-[#002c52] text-white px-3 py-1.5 rounded-md">تطبيق</button>
+        <a href="{% url 'career_path:list' %}" class="border-1 border-[#002c52] px-3 py-1.5 rounded-md">إعادة تعيين</a>
       </form>
     </div>
 
     <section class="rounded-lg glass-card-expert text-center">
       <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm bg-white rounded-lg">
           <thead>
             <tr class="text-gray-600 bg-gray-100">
               <th class="py-2 pe-3">#</th>
@@ -88,7 +94,12 @@
               <td class="py-2 pe-3">{{ it.suggested_path|default:"—" }}</td>
               <td class="py-2 pe-3">{{ it.created_at|date:"Y-m-d H:i" }}</td>
               <td class="py-2">
-                <a class="underline text-blue-600" href="{% url 'career_path:result' it.id %}">عرض</a>
+                <a class="flex items-center justify-center" href="{% url 'career_path:result' it.id %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                </a>
               </td>
             </tr>
             {% empty %}
@@ -98,36 +109,45 @@
         </table>
       </div>
     </section>
+   </div>
 
   {% else %}
   <div class="max-w-full mx-auto py-10">
     <h2 class="text-lg font-bold mb-2">سجل اختبارات المسار</h2>
-    <p class="mt-2 text-gray-600">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
 
-    <section class="rounded-lg glass-card-expert text-center mt-6">
+    <section class="rounded-lg text-center mt-6">
       <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm rounded-lg">
           <thead>
             <tr class="text-gray-600 bg-gray-100">
               <th class="py-2 pe-3">#</th>
-              <th class="py-2 pe-3">الحالة</th>
               <th class="py-2 pe-3">المسار المقترح</th>
               <th class="py-2 pe-3">التاريخ</th>
+              <th class="py-2 pe-3">الحالة</th>
               <th class="py-2">التفاصيل</th>
             </tr>
           </thead>
           <tbody>
             {% for it in items %}
-            <tr class="border-t border-gray-200">
+            <tr class="border-t border-gray-200 bg-white">
               <td class="py-2 pe-3">{{ it.id|stringformat:"03d" }}</td>
-              <td class="py-2 pe-3">{{ it.get_status_display }}</td>
               <td class="py-2 pe-3">{{ it.suggested_path|default:"—" }}</td>
               <td class="py-2 pe-3">{{ it.created_at|date:"Y-m-d H:i" }}</td>
+              <td class="py-2 pe-3">{{ it.get_status_display }}</td>
               <td class="py-2">
                 {% if it.status == "FINISHED" %}
-                  <a class="underline text-blue-600" href="{% url 'career_path:result' it.id %}">تفاصيل</a>
+                  <a class="flex items-center justify-center" href="{% url 'career_path:result' it.id %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                  </a>
                 {% else %}
-                  <a class="underline text-blue-600" href="{% url 'career_path:question' it.id 1 %}">متابعة</a>
+                  <a class="flex items-center justify-center" href="{% url 'career_path:question' it.id 1 %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                  </a>
                 {% endif %}
               </td>
             </tr>

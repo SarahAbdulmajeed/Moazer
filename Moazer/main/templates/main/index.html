@@ -1,120 +1,349 @@
 {% extends 'main/base.html' %}
+{% load static %}
 {% block title %} الصفحة الرئيسية {% endblock %}
 
 {% block content %}
 <div class="p-4">
-  <h2 class="text-lg font-semibold py-4 mb-4 sm:text-right">لوحة التحكم</h2>
+  {% if user.is_authenticated %}
+    <h2 class="text-lg font-semibold py-4 mb-4 sm:text-right">لوحة التحكم</h2>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% endif %}
 
-    <!-- KPIs -->
-  <div class=" p-4 rounded-2xl glass-card">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-      {% if not user.is_authenticated %}
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">إجمالي الاستشارات</p>
-        <p class="text-2xl font-bold">٤٠٠</p>
+  {% if user.groups.all.0.name == "Students" %}
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center"> 
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-01.svg' %}" alt="bot image" class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">إجمالي اختبارات</h2>
+        <h2 class="text-2xl text-black">اكتشف مسارك</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ total_paths }}</p>
       </div>
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">إجمالي الخبراء</p>
-        <p class="text-2xl font-bold">{{ experts_count }}</p>
-      </div>
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">إجمالي الطلاب</p>
-        <p class="text-2xl font-bold">{{ students_count }}</p>
-      </div>
-      {% endif %}
-      {% if user.groups.all.0.name == "Students" %}
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">اجمالي اختبارات "اكتشف مسارك"</p>
-        <p class="text-2xl font-bold">٤٠٠</p>
-      </div>
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">اجمالي المقابلات الافتراضية AI</p>
-        <p class="text-2xl font-bold">٢٥٠</p>
-      </div>
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">اجمالي الاستشارات</p>
-        <p class="text-2xl font-bold">٣٠٠٠</p>
-      </div>
-      {% endif %}
-      {% if user.groups.all.0.name == "Experts" %}
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">إجمالي الاستشارات</p>
-        <p class="text-2xl font-bold">٤٠٠</p>
-      </div>
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">إجمالي الاستشارات النشطة</p>
-        <p class="text-2xl font-bold">٢٥٠</p>
-      </div>
-      <div class="rounded-2xl px-4 py-6 text-center bg-white space-y-2 shadow">
-        <p class="text-sm">إجمالي الاستشارات المكتملة</p>
-        <p class="text-2xl font-bold">٣٠٠٠</p>
-      </div>
-      {% endif %}
     </div>
 
-
-
-    <!-- Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-      <div class="bg-white shadow rounded-2xl p-4 h-64 flex items-center justify-center text-center text-gray-400 text-sm">
-        رسم بياني للنمو في المنصة
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-02.svg' %}" alt="bot image" class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">إجمالي</h2>
+        <h2 class="text-2xl text-black">المقابلات الافتراضية</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ total_interviews }}</p>
       </div>
-      <div class="bg-white shadow rounded-2xl p-4 h-64 flex items-center justify-center text-center text-gray-400 text-sm">
-        أكثر أنواع الاستشارات طلباً
+    </div>
+
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-03.svg' %}"  alt="chat image"  class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">إجمالي</h2>
+        <h2 class="text-2xl text-black">الاستشارات</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ total_consultations }}</p>
       </div>
     </div>
   </div>
 
+  <div class="mt-8 flex md:flex-row flex-col gap-4">
+    {% if last_path %}
+    <div class="bg-white/50 rounded-lg p-6 mb-6 md:w-[50%] w-full shadow text-sm">
+      <h2 class="text-lg font-bold mb-2 text-center">آخر اختبار (اكتشف مسارك)</h2>
+      <div>
+        <p class="text-gray-700 font-semibold">المسار المقترح: </p>
+        <span>{{ last_path.suggested_path|default:"-" }}</span>
+      </div>
+      <div>
+        <p class="text-gray-700 font-semibold">نقاط القوة: </p>
+        <span>{{ last_path.strengths|default:"-" }}</span>
+      </div>
+      <div>
+        <p class="text-gray-700 font-semibold">نقاط الضعف: </p>
+        <span>{{ last_path.weaknesses|default:"-" }}</span>
+      </div>
+    </div>
+    {% endif %}
+    {% if last_interview %}
+    <div class="bg-white/50 rounded-lg p-6 mb-6 md:w-[50%] w-full shadow text-sm">
+      <h2 class="text-lg font-bold mb-2 text-center">آخر مقابلة افتراضية</h2>
+      <div>
+        <p class="text-gray-700 font-semibold">المسمى الوظيفي: </p>
+        <span>{{ last_interview.job_title }}</span>
+      </div>
+      <div>
+        <p class="text-gray-700 mt-1 font-semibold">التقييم العام: </p>
+        <span>{{ last_interview.overall_score|default:"-" }}</span>
+      </div>
+      <div>
+        <p class="text-gray-700 mt-1 font-semibold">التوصية:</p>
+        <span>{{ last_interview.recommendation|default:"-" }}</span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  
   <!-- Services -->
   <div class="rounded-3xl mt-6">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
       <!-- #1 -->
-      <div class="bg-[#ffffffa1] rounded-2xl p-4 shadow glass-card h-full flex flex-col">
+      <div class="bg-[#ffffffa1] rounded-lg p-4 shadow glass-card h-full flex flex-col">
         <div class="flex items-center gap-2 mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z" /> </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z" />
+          </svg>
           <h3 class="font-semibold">اكتشف مسارك</h3>
         </div>
         <p class="text-sm text-gray-600">
           تحدّث مع الذكاء الاصطناعي ليقترح عليك التخصص أو المسار المهني الأنسب، مع تقرير موجز يشرح سبب التوصية.
         </p>
-        <a href="" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center mt-auto">
+        <a href="{% url 'career_path:list' %}" class="bg-[#62a491] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center  mt-4">
           ابدأ الاكتشاف
         </a>
       </div>
 
       <!-- #2  -->
-      <div class="bg-[#ffffffa1] rounded-2xl p-4 shadow glass-card h-full flex flex-col">
+      <div class="bg-[#ffffffa1] rounded-lg p-4 shadow glass-card h-full flex flex-col">
         <div class="flex items-center gap-2 mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
           </svg>
           <h3 class="font-semibold">مقابلة افتراضية AI</h3>
         </div>
         <p class="text-sm text-gray-600">
           جرّب مقابلة تحاكي الواقع للمسمّى الذي تستهدفه، واحصل فورًا على تقرير بنقاط القوة وفرص التحسين.
         </p>
-        <a href="" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center mt-auto">
+        <a href="{% url 'ai_interview:start' %}" class="bg-[#62a491] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center  mt-4">
           ابدأ المقابلة
         </a>
       </div>
 
       <!-- #3 -->
-      <div class="bg-[#ffffffa1] rounded-2xl p-4 shadow glass-card h-full flex flex-col">
+      <div class="bg-[#ffffffa1] rounded-lg p-4 shadow glass-card h-full flex flex-col">
         <div class="flex items-center gap-2 mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /> </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+          </svg>
           <h3 class="font-semibold">احجز جلسة مع خبير</h3>
         </div>
         <p class="text-sm text-gray-600">
           اختر مستشارًا أكاديميًا أو وظيفيًا، حدّد الوقت، وابدأ جلسة توجيه شخصية مع ملخص بعد الجلسة.
         </p>
-        <a href="" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center mt-auto">
+        <a href="{% url 'accounts:experts_view' %}" class="bg-[#62a491] text-white px-4 py-2 mt-4 rounded-lg w-full md:w-auto text-center  mt-4">
           احجز استشارة
         </a>
       </div>
 
     </div>
   </div>
+  {% endif %}
+
+
+  
+  {% if user.groups.all.0.name == "Experts" %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center"> 
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-03.svg' %}" alt="bot image" class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">إجمالي</h2>
+        <h2 class="text-2xl text-black">الاستشارات</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ total_consultations }}</p>
+      </div>
+    </div>
+
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-03.svg' %}" alt="bot image" class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">اجمالي الاستشارات</h2>
+        <h2 class="text-2xl text-black">النشطة</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ active_consultations }}</p>
+      </div>
+    </div>
+
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-03.svg' %}"  alt="chat image"  class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">اجمالي الاستشارات</h2>
+        <h2 class="text-2xl text-black">المكتملة</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ completed_consultations }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+    <div class="bg-white p-6 rounded-xl shadow w-full">
+      <h2 class="text-lg font-bold mb-4">الدخل الشهري</h2>
+      <canvas id="incomeChart"></canvas>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-lg font-bold mb-4 text-center">أكثر أنواع الاستشارات طلبًا</h2>
+      <div class="flex items-center justify-center">
+        <div class="h-64">
+          <canvas id="consultationChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+    new Chart(incomeCtx, {
+      type: 'line',
+      data: {
+        labels: {{ income_labels|safe }},
+        datasets: [{
+          label: 'الدخل (ر.س)',
+          data: {{ income_data|safe }},
+          borderColor: '#4F46E5',
+          backgroundColor: 'rgba(79,70,229,0.1)',
+          tension: 0.3,
+          fill: true,
+          pointBackgroundColor: '#4F46E5',
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    const consultationCtx = document.getElementById("consultationChart").getContext("2d");
+    new Chart(consultationCtx, {
+      type: "doughnut",
+      data: {
+        labels: {{ consultation_labels|safe }},
+        datasets: [{
+          data: {{ consultation_data|safe }},
+          backgroundColor: ["#8EC9F9", "#FADC87", "#8CCFBB"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "right",
+            labels: {
+              usePointStyle: true,
+              pointStyle: "circle",
+              font: {
+                family: "'Cairo', sans-serif",
+                size: 12
+              }
+            }
+          }
+        }
+      }
+    });
+
+</script>
+
+  {% endif %}
+
+
+  {% if user.is_staff or user.is_superuser %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center"> 
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-01.svg' %}" alt="bot image" class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">إجمالي اختبارات</h2>
+        <h2 class="text-2xl text-black">اكتشف مسارك</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ platform_total_paths }}</p>
+      </div>
+    </div>
+
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-02.svg' %}" alt="bot image" class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">إجمالي</h2>
+        <h2 class="text-2xl text-black">المقابلات الافتراضية</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ platform_total_interviews }}</p>
+      </div>
+    </div>
+
+    <div class="relative w-64 aspect-square rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-start pt-8">
+      <img src="{% static 'images/dashboard-03.svg' %}"  alt="chat image"  class="absolute inset-0 w-full h-full object-cover">
+      <div class="relative z-10 text-center">
+        <h2 class="font-base text-black">إجمالي</h2>
+        <h2 class="text-2xl text-black">الاستشارات</h2>
+        <p class="text-4xl font-bold mt-2 text-black">{{ platform_total_consultations }}</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="bg-white shadow rounded-2xl p-6 h-80 flex flex-col mt-8">
+    <h2 class="text-lg font-bold mb-4 text-center">النمو في المنصّة (آخر ٦ شهور)</h2>
+    <div class="flex-1">
+      <canvas id="growthChart"></canvas>
+    </div>
+  </div>
+
+<script>
+  const growthCtx = document.getElementById("growthChart").getContext("2d");
+  new Chart(growthCtx, {
+    type: "line",
+    data: {
+      labels: {{ growth_labels|safe }},
+      datasets: [
+        {
+          label: "الطلاب",
+          data: {{ growth_students|safe }},
+          borderColor: "#8EC9F9",
+          backgroundColor: "rgba(142,201,249,0.2)",
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: "#8EC9F9"
+        },
+        {
+          label: "الخبراء",
+          data: {{ growth_experts|safe }},
+          borderColor: "#8CCFBB",
+          backgroundColor: "rgba(140,207,187,0.2)",
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: "#8CCFBB"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,   
+      plugins: {
+        legend: {
+          position: "right",        
+          labels: {
+            usePointStyle: true,
+            pointStyle: "circle",
+            font: {
+              family: "'Cairo', sans-serif", 
+              size: 13
+            }
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+
+
+
+
+  {% endif %}
+
 
 
 </div>

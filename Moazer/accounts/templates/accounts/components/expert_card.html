@@ -87,25 +87,25 @@
       {% if expert.is_deleted %}
         <!-- Deleted Expert: only show profile -->
         <a href="{% url 'accounts:expert_detail_view' expert.id %}"
-          class="rounded-lg text-center w-full bg-gray-800 text-white py-2 text-sm">الملف الشخصي</a>
+          class="rounded-lg text-center w-full bg-[#392a00] text-white py-2 text-sm">الملف الشخصي</a>
       {% else %}
         {% if user.is_staff %}
           <!-- Admin: Approve / Deactivate + Profile -->
           {% if expert.is_approved %}
             <a href="{% url 'accounts:deactivate_expert' expert.id %}"
-              class="rounded-lg text-center w-full sm:w-1/2 bg-red-500 text-white py-2 text-sm">إلغاء التفعيل</a>
+              class="rounded-lg text-center w-full sm:w-1/2 bg-[#bf5748] text-white py-2 text-sm">إلغاء التفعيل</a>
           {% else %}
             <a href="{% url 'accounts:approve_expert' expert.id %}"
-              class="rounded-lg text-center w-full sm:w-1/2 bg-green-500 text-white py-2 text-sm">تفعيل</a>
+              class="rounded-lg text-center w-full sm:w-1/2 bg-[#62a491] text-white py-2 text-sm">تفعيل</a>
           {% endif %}
           <a href="{% url 'accounts:expert_detail_view' expert.id %}"
-            class="rounded-lg text-center w-full sm:w-1/2 bg-gray-800 text-white py-2 text-sm">الملف الشخصي</a>
+            class="rounded-lg text-center w-full sm:w-1/2 bg-[#392a00] text-white py-2 text-sm">الملف الشخصي</a>
         {% elif user.groups.all.0.name == "Students" %}
           <!-- Students: Book Consultation + Profile -->
           <a href="{% url 'consultations:create_view' expert_id=expert.user.id %}"
-            class="rounded-lg text-center w-full sm:w-1/2 bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white py-2 text-sm">حجز استشارة</a>
+            class="rounded-lg text-center w-full sm:w-1/2 bg-[#f9dc85] text-black py-2 text-sm">حجز استشارة</a>
           <a href="{% url 'accounts:expert_detail_view' expert.id %}"
-            class="rounded-lg text-center w-full sm:w-1/2 bg-gray-800 text-white py-2 text-sm">الملف الشخصي</a>
+            class="rounded-lg text-center w-full sm:w-1/2 bg-[#392a00] text-white py-2 text-sm">الملف الشخصي</a>
         {% endif %}
       {% endif %}
     </div>

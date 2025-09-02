@@ -1,5 +1,7 @@
 {% extends 'main/base.html' %}
 {% block title %}تقييم الاستشارة{% endblock %}
+{% block background %}bg-gradient-to-t from-transparent to-[#f9dc85]/50{% endblock %}
+{% block consultation_nav %} font-semibold {% endblock %}
 {% block content %}
 <div class="flex items-center justify-center min-h-[80vh] p-4">
   <div class="bg-white/80 backdrop-blur-md shadow-lg rounded-2xl w-full max-w-md p-6 glass-card">
@@ -26,7 +28,7 @@
           رجوع
         </a>
         <button type="submit"
-                class="w-1/2 bg-[linear-gradient(300deg,_var(--malibu-80),_var(--malibu-200))] text-white py-2 rounded-lg shadow hover:opacity-90">
+                class="w-1/2 bg-[#392a00] text-white py-2 rounded-lg shadow hover:opacity-90">
           تأكيد
         </button>
       </div>

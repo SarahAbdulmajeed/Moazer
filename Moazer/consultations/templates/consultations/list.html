@@ -1,7 +1,9 @@
 {% extends 'main/base.html' %}
 {% block title %}قائمة الاستشارات{% endblock %}
+{% block background %}bg-gradient-to-t from-transparent to-[#f9dc85]/50{% endblock %}
+{% block consultation_nav %} font-semibold {% endblock %}
 {% block content %}
-<div class="p-6 space-y-6">
+<div class="p-6 ">
   <!-- Title + Filter -->
   <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3">
     <h3 class="text-lg font-semibold">قائمة الاستشارات</h3>
@@ -9,7 +11,7 @@
     <!-- Filter -->
     <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
       <!-- Consultation Status -->
-      <select name="status" class="border rounded-md p-1.5 text-sm">
+      <select name="status" class="border rounded-md p-1.5 text-sm bg-white">
         <option value="">الحالة: الكل</option>
         {% for value, label in status_choices %}
           <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
@@ -17,7 +19,7 @@
       </select>
 
       <!-- Consultation Type -->
-      <select name="type" class="border rounded-md p-1.5 text-sm">
+      <select name="type" class="border rounded-md p-1.5 text-sm bg-white">
         <option value="">النوع: الكل</option>
         {% for value, label in ctype_choices %}
           <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>
@@ -27,15 +29,15 @@
       </select>
 
       <!-- Filter Buttons -->
-      <button type="submit" title="تطبيق الفلترة" class="bg-black text-white px-3 py-1.5 rounded-md flex items-center">تطبيق</button>
-      <a href="{% url 'consultations:list_view' %}" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md flex items-center">إعادة تعيين</a>
+      <button type="submit" title="تطبيق الفلترة" class="bg-[#392a00] text-white px-3 py-1.5 rounded-md flex items-center">تطبيق</button>
+      <a href="{% url 'consultations:list_view' %}" class="border-1 border-[#392a00] text-gray-800 px-3 py-1.5 rounded-md flex items-center">إعادة تعيين</a>
     </form>
   </div>
 
   <!-- Consultation List -->
   <section class="rounded-lg glass-card-expert text-center">
     <div class="overflow-x-auto">
-      <table class="min-w-full text-sm">
+      <table class="min-w-full text-sm bg-white rounded-lg">
 <thead>
   <tr class="text-gray-600 bg-gray-100">
     <th class="py-2 pe-3">رقم</th>

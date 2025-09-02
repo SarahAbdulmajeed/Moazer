@@ -5,11 +5,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import send_mail
 from django.conf import settings
 
-
-
-
-
-
 def contact_view(request):
     if request.method == "POST":
         if request.user.is_authenticated:

@@ -2,7 +2,7 @@
   {% for m in c.messages.all %}
     <div class="flex flex-col {% if m.sender == request.user %}items-end{% else %}items-start{% endif %}">
       <!-- Message Bubble -->
-      <div class="max-w-[70%] p-3 rounded-2xl shadow-sm {% if m.sender == request.user %} bg-blue-100 text-gray-800 rounded-bl-none {% else %} bg-gray-50 text-gray-700 border border-gray-200 rounded-br-none {% endif %}">
+      <div class="max-w-[70%] p-3 rounded-2xl shadow-sm {% if m.sender == request.user %} bg-[#f9dc85] text-gray-800 rounded-bl-none {% else %} bg-gray-50 text-gray-700 border border-gray-200 rounded-br-none {% endif %}">
         <!-- Sender Name -->
         <div class="font-semibold text-sm text-gray-600 mb-1"> {{ m.sender.first_name }}</div>
         <!-- Message Content -->

@@ -1,16 +1,16 @@
 {% extends "main/base.html" %}
 {% block title %}جميع رسائل التواصل{% endblock %}
-
+{% block messages_nav %} font-semibold {% endblock %}
 {% block content %}
-<div class="max-w-6xl mx-auto py-10">
+<div class="max-w-6xl py-6 flex flex-col gap-4">
 
   <!-- Page Title -->
-  <h2 class="text-2xl font-bold mb-6 text-center">جميع رسائل التواصل</h2>
+  <h3 class="text-lg font-semibold">جميع رسائل التواصل</h3>
 
   {% if messages_list %}
   <section class="rounded-lg glass-card-expert text-center">
     <div class="overflow-x-auto">
-      <table class="min-w-full text-sm">
+      <table class="min-w-full text-sm bg-white">
         <thead>
           <tr class="text-gray-600 bg-gray-100">
             <th class="py-2 pe-3">#</th>
@@ -30,7 +30,7 @@
             <td class="py-2 pe-3 text-gray-700">{{ msg.message|truncatechars:40 }}</td>
             <td class="py-2 pe-3">{{ msg.created_at|date:"Y-m-d H:i" }}</td>
             <td class="py-2">
-              <button type="button" onclick="document.getElementById('replyModal-{{ msg.id }}').classList.remove('hidden')" class="px-3 py-1.5 bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white rounded-lg hover:opacity-90 transition">كتابة رد</button>
+              <button type="button" onclick="document.getElementById('replyModal-{{ msg.id }}').classList.remove('hidden')" class="px-3 py-1.5 bg-[#f9dc85] text-black rounded-lg hover:opacity-90 transition">كتابة رد</button>
             </td>
           </tr>
           {% empty %}
@@ -61,8 +61,8 @@
         
         <div class="flex justify-end">
           <button type="submit"
-                  class="px-5 py-2 rounded-lg bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] 
-                         text-white font-semibold hover:opacity-90 transition">
+                  class="px-5 py-2 rounded-lg bg-[#f9dc85]
+                         text-black hover:opacity-90 transition">
             إرسال الرد
           </button>
         </div>

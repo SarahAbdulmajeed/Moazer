@@ -1,10 +1,10 @@
 {% extends "main/base.html" %}
 {% load static %}
-
+{% block profile_nav %} font-semibold {% endblock %}
 {% block title %} تعديل الملف الشخصي {% endblock %}
 
 {% block content %}
-<div class="p-6 space-y-12">
+<div class="min-h-[calc(100vh-73px)] flex flex-col items-center justify-center content-center h-full">
     
     {% if not user.is_authenticated %}
         <h2 class="text-center text-xl font-semibold text-gray-600">مرحبا بالزائر</h2>
@@ -33,31 +33,31 @@
             <div class="bg-gray-50 rounded-lg p-4">
                 <label class="text-sm text-gray-500">الاسم الأول</label>
                 <input type="text" name="first_name" value="{{ user.first_name }}"
-                       class="w-full border rounded-lg px-2 py-1">
+                       class="w-full border rounded-lg px-2 py-1 bg-white">
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
                 <label class="text-sm text-gray-500">الاسم الأخير</label>
                 <input type="text" name="last_name" value="{{ user.last_name }}"
-                       class="w-full border rounded-lg px-2 py-1">
+                       class="w-full border rounded-lg px-2 py-1 bg-white">
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
                 <label class="text-sm text-gray-500">البريد الإلكتروني</label>
                 <input type="email" name="email" value="{{ user.email }}"
-                       class="w-full border rounded-lg px-2 py-1">
+                       class="w-full border rounded-lg px-2 py-1 bg-white">
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
                 <label class="text-sm text-gray-500">رقم الجوال</label>
                 <input type="text" name="phone" value="{{ profile.phone }}"
-                       class="w-full border rounded-lg px-2 py-1">
+                       class="w-full border rounded-lg px-2 py-1 bg-white">
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
                 <label class="text-sm text-gray-500">تاريخ الميلاد</label>
                 <input type="date" name="birth_date" value="{{ profile.birth_date|date:'Y-m-d' }}"
-                       class="w-full border rounded-lg px-2 py-1">
+                       class="w-full border rounded-lg px-2 py-1 bg-white">
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
                 <label class="text-sm text-gray-500">الجنس</label>
-                <select name="gender" class="w-full border rounded-lg px-2 py-1">
+                <select name="gender" class="w-full border rounded-lg px-2 py-1 bg-white">
                     <option value="male" {% if profile.gender == "male" %}selected{% endif %}>ذكر</option>
                     <option value="female" {% if profile.gender == "female" %}selected{% endif %}>أنثى</option>
                 </select>
@@ -65,21 +65,21 @@
             <div class="bg-gray-50 rounded-lg p-4">
                 <label class="text-sm text-gray-500">المدينة</label>
                 <input type="text" name="city" value="{{ profile.city }}"
-                       class="w-full border rounded-lg px-2 py-1">
+                       class="w-full border rounded-lg px-2 py-1 bg-white">
             </div>
         </div>
 
         <!-- Description -->
         <div class="bg-gray-50 rounded-lg p-4">
             <label class="text-sm text-gray-500">نبذة</label>
-            <textarea name="bio" rows="3" class="w-full border rounded-lg px-2 py-1">{{ profile.bio }}</textarea>
+            <textarea name="bio" rows="3" class="w-full border rounded-lg px-2 py-1 bg-white">{{ profile.bio }}</textarea>
         </div>
 
         <!-- Student Property -->
         {% if profile_type == "student" %}
         <div class="bg-gray-50 rounded-lg p-4">
             <label class="text-sm text-gray-500">مرحلة الدراسة</label>
-            <select name="study_stage" class="w-full border rounded-lg px-2 py-1">
+            <select name="study_stage" class="w-full border rounded-lg px-2 py-1 bg-white">
                 <option value="middle" {% if profile.study_stage == "middle" %}selected{% endif %}>المتوسطة</option>
                 <option value="high" {% if profile.study_stage == "high" %}selected{% endif %}>الثانوية</option>
                 <option value="diploma" {% if profile.study_stage == "diploma" %}selected{% endif %}>الدبلوم</option>
@@ -147,7 +147,7 @@
 
         <!-- Buttons -->
         <div class="flex gap-4 justify-center">
-            <button type="submit" class="bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white px-6 py-2 rounded-lg shadow">
+            <button type="submit" class="bg-[#62a491] text-white px-6 py-2 rounded-lg shadow">
                 حفظ التغييرات
             </button>
         </div>
@@ -156,7 +156,7 @@
     <!-- Delete Account Button -->
     <form method="post" action="{% url 'accounts:delete_profile' %}" class="max-w-4xl mx-auto mt-6 text-center">
         {% csrf_token %}
-        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg shadow">
+        <button type="submit" class="bg-[#bf5748] hover:bg-red-600 text-white px-6 py-2 rounded-lg shadow">
             حذف الحساب
         </button>
     </form>

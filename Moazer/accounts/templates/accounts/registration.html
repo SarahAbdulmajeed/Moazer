@@ -1,10 +1,10 @@
 {% extends 'main/base.html' %}
 {% block title %} تسجيل مستخدم جديد {% endblock %}
-
+{% block signup_nav %} font-semibold {% endblock %}
 {% block content %}
-<div class="flex items-center justify-center min-h-[80vh] p-4">
-  <div class="bg-white/90 backdrop-blur-md shadow-lg rounded-2xl w-full max-w-4xl p-8 glass-card">
-    <h2 class="text-2xl font-bold text-center mb-8">تسجيل مستخدم جديد</h2>
+<div class="min-h-[calc(100vh-73px)] flex flex-col items-center justify-center content-center h-full">
+  <div class="bg-white/80 backdrop-blur-md shadow-lg rounded-2xl w-full p-6 max-w-4xl">
+    <h2 class="text-2xl font-bold text-center mb-6">تسجيل مستخدم جديد</h2>
 
     <form method="post" enctype="multipart/form-data" class="space-y-8">
       {% csrf_token %}
@@ -15,19 +15,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium">اسم المستخدم</label>
-            <input required type="text" name="username" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]">
+            <input required type="text" name="username" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] bg-white">
           </div>
           <div>
             <label class="block text-sm font-medium">البريد الإلكتروني</label>
-            <input required type="email" name="email" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="email" name="email" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
           <div>
             <label class="block text-sm font-medium">كلمة المرور</label>
-            <input required type="password" name="password1" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="password" name="password1" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
           <div>
             <label class="block text-sm font-medium">تأكيد كلمة المرور</label>
-            <input required type="password" name="password2" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="password" name="password2" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
         </div>
       </div>
@@ -38,30 +38,30 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium">الاسم الأول</label>
-            <input required type="text" name="first_name" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="text" name="first_name" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
           <div>
             <label class="block text-sm font-medium">اسم العائلة</label>
-            <input required type="text" name="last_name" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="text" name="last_name" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
           <div>
             <label class="block text-sm font-medium">تاريخ الميلاد</label>
-            <input required type="date" name="birth_date" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="date" name="birth_date" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
           <div>
             <label class="block text-sm font-medium">الجنس</label>
-            <select required name="gender" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <select required name="gender" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
               <option value="male">ذكر</option>
               <option value="female">أنثى</option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-medium">رقم الجوال</label>
-            <input required type="text" name="phone" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="text" name="phone" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
           <div>
             <label class="block text-sm font-medium">المدينة</label>
-            <input required type="text" name="city" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2">
+            <input required type="text" name="city" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)]-lg p-2 bg-white">
           </div>
           <div class="md:col-span-2">
             <label class="block mb-2 text-sm font-medium" for="avatar">الصورة الشخصية</label>
@@ -69,7 +69,7 @@
         </div>
           <div class="md:col-span-2">
             <label class="block text-sm font-medium">نبذة</label>
-            <textarea name="bio" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2"></textarea>
+            <textarea name="bio" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2 bg-white"></textarea>
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@
         <h3 class="text-lg font-semibold pb-2">نوع المستخدم</h3>
         <div>
           <label class="block text-sm font-medium">نوع المستخدم</label>
-          <select id="user-type" name="user_type" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2">
+          <select id="user-type" name="user_type" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2 bg-white">
             <option value="">اختر نوع المستخدم</option>
             <option value="student">طالب</option>
             <option value="expert">خبير</option>
@@ -89,7 +89,7 @@
         <!-- Student Fields -->
         <div id="student-fields" class="hidden">
           <label class="block text-sm font-medium">المرحلة الدراسية</label>
-          <select name="study_stage" class="w-full border rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2">
+          <select name="study_stage" class="w-full border rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--malibu-200)] focus:border-[var(--malibu-200)] p-2 bg-white">
             <option value="middle">المتوسطة</option>
             <option value="high">الثانوية</option>
             <option value="diploma">الدبلوم</option>
@@ -137,7 +137,7 @@
 
 
       <!-- Registration Button -->
-      <button type="submit" class="w-full bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white py-3 rounded-lg shadow mt-4 font-medium">تسجيل</button>
+      <button type="submit" class="w-full bg-[#62a491] text-white py-3 rounded-lg shadow mt-4 font-medium">تسجيل</button>
     </form>
   </div>
 </div>

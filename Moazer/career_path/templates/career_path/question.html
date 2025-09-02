@@ -1,35 +1,33 @@
 {% extends "main/base.html" %}
-{% block title %}السؤال {{ step }}{% endblock %}
+{% load static %}
+{% block title %}اكتشف مسارك - السؤال {{ step }}{% endblock %}
+{% block background %}bg-gradient-to-t from-transparent to-[#8ec8fa]/50{% endblock %}
+{% block career_path_nav %} font-semibold {% endblock %}
 {% block content %}
 <!-- Single-question screen with modern card style -->
-
-
-<div class="h-full flex items-center justify-center">
-  <div class="bg-white/80 rounded-2xl shadow p-8 w-full max-w-3xl glass-card">
+<div class="min-h-[calc(100vh-73px)] flex items-center justify-center flex-col">
+  <div class="bg-white/50 rounded-2xl shadow p-8 w-full max-w-3xl glass-card">
     <h2 class="text-2xl font-bold text-center mb-3">اكتشف مسارك</h2>
     <!-- Title + Progress -->
     <p class="text-center text-sm mb-6">السؤال رقم <b>{{ step }}</b> من <b>{{ total }}</b></p>
-
     <!-- Question Text -->
     <p class="text-lg font-medium text-gray-800 mb-6 text-center">“ {{ q.text }} ”</p>
-
     <!-- Form -->
     <form method="post" class="space-y-4">
       {% csrf_token %}
       <div>
-        <label class="block text-sm text-gray-600 mb-2 font-semibold">إجابتك:</label>
-        <textarea name="answer" rows="6"
-                  class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400">{{ prev_answer }}</textarea>
+        <label class="text-sm text-gray-800 mb-2 font-semibold">إجابتك:</label>
+        <textarea name="answer" rows="6" class="block bg-white w-full border border-gray-300 rounded-lg p-3">{{ prev_answer }}</textarea>
       </div>
-
       <!-- Actions -->
       <div class="flex justify-center">
-        <button class="px-6 py-2 rounded-lg bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] 
-                       text-white font-semibold hover:opacity-90 transition">
-          التالي
-        </button>
+        <button class="px-6 py-2 rounded-lg bg-[#002c52] text-white  hover:opacity-90 transition">التالي</button>
       </div>
     </form>
   </div>
+    <div class="justify-items-center mt-10">
+      <img src="{% static 'images/bot-04.svg' %}" class="h-64" alt="Bot Greeting" />
+    </div>
 </div>
+
 {% endblock %}

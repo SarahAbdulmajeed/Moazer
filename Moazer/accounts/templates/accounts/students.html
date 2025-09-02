@@ -1,17 +1,17 @@
 {% extends 'main/base.html' %}
 {% block title %}قائمه الطلاب{% endblock %}
-
+{% block students_nav %} font-semibold {% endblock %}
 {% block content %}
-<div class="p-6 space-y-6">
+<div class="p-6 space-y-12">
 
   <!-- Title + Filters -->
-  <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3">
-    <h3 class="text-lg font-semibold">قائمة الطلاب</h3>
+   <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold sm:text-right">قائمة الطلاب</h2>
 
     <!-- Filters Form -->
-    <form method="get" class=" items-center gap-2 text-sm flex sm:flex-row flex-col">
+     <form method="get" class="flex flex-wrap items-center gap-2 text-sm">
       <!-- Filter by study stage -->
-      <select name="stage" class="border rounded-md p-1.5 text-sm w-full">
+      <select name="stage" class="border rounded-md p-1.5 w-45 text-sm bg-white">
         <option value="">المرحلة الدراسية: الكل</option>
         {% for value, label in stages %}
           <option value="{{ value }}" {% if selected_stage == value %}selected{% endif %}>{{ label }}</option>
@@ -19,7 +19,7 @@
       </select>
 
       <!-- Filter by city -->
-      <select name="city" class="border rounded-md p-1.5 text-sm w-full">
+      <select name="city" class="border rounded-md p-1.5 w-36 text-sm bg-white">
         <option value="">المدينة: الكل</option>
         {% for c in cities %}
           <option value="{{ c }}" {% if selected_city == c %}selected{% endif %}>{{ c }}</option>
@@ -28,7 +28,7 @@
 
       <!-- Filter buttons -->
        <div class="flex flex-row gap-2">
-        <button type="submit" title="Apply Filters" class="bg-black text-white px-3 py-1.5 rounded-md flex items-center">تطبيق </button>
+        <button type="submit" title="Apply Filters" class="bg-[#62a491] text-white px-3 py-1.5 rounded-md flex items-center">تطبيق </button>
         <a href="{% url 'accounts:students_view' %}" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md flex items-center">محو</a>
        </div>
     </form>
@@ -37,7 +37,7 @@
 <!-- Students Table -->
 <section class="rounded-lg glass-card-expert text-center">
   <div class="overflow-x-auto">
-    <table class="min-w-full text-sm">
+    <table class="min-w-full text-sm bg-white">
       <thead>
         <tr class="text-gray-600 bg-gray-100">
           <th class="py-2 pe-3">#</th>
