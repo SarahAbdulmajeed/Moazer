@@ -30,7 +30,6 @@ def subscribe_view(request, plan_id: int):
     plan = get_object_or_404(Plan, pk=plan_id)
     try:
         inv = create_moyasar_invoice(request.user, plan)
-        # رابط الدفع من ميسّر (نتأكد من المفتاح المناسب في الرد)
         pay_url = inv.get("invoice_url") or inv.get("url") or inv.get("source", {}).get("company", {}).get("url")
         if not pay_url:
             messages.error(request, "تعذّر قراءة رابط الدفع من استجابة ميسّر.")

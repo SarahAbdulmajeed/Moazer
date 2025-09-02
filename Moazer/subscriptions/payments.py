@@ -22,7 +22,6 @@ def create_invoice(plan, user, callback_url):
         },
     }
 
-    # حارس أخير قبل الإرسال
     sk = settings.MOYASAR_SECRET_KEY
     if not sk or len(sk) < 25:
         raise MoyasarError("Invalid MOYASAR_SECRET_KEY (empty/too short).")
@@ -34,10 +33,8 @@ def create_invoice(plan, user, callback_url):
             auth=(sk, ""),      # Basic Auth = (secret_key, "")
             timeout=20,
         )
-        # لو فيه خطأ من ميسر، اطبعي جسم الرد ليساعدنا
         if resp.status_code >= 400:
             raise MoyasarError(f"{resp.status_code} {resp.text}")
         return resp.json()
     except requests.RequestException as e:
-        # DNS/شبكة… إلخ
         raise MoyasarError(str(e)) from e

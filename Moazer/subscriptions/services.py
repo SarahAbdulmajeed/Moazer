@@ -48,7 +48,6 @@ def create_moyasar_invoice(user, plan) -> dict:
         "currency": "SAR",
         "description": f"Plan {plan.name} - {plan.attempts} attempts",
         "callback_url": settings.MOYASAR_CALLBACK_URL,
-        # تقدر تضيف redirect_url إذا ودك صفحة شكر خاصة:
         # "redirect_url": "http://127.0.0.1:8000/subscriptions/thanks/",
         "metadata": {
             "user_id": user.id,
