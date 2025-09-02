@@ -1,6 +1,8 @@
 from typing import Optional
 from django.contrib.auth import get_user_model
 from .models import Wallet
+import requests
+from django.conf import settings
 
 User = get_user_model()
 
@@ -31,3 +33,34 @@ def grant_plan(user, plan) -> None:
     """
     w, _ = Wallet.objects.get_or_create(user=user)
     w.add_attempts(plan.attempts)
+
+class MoyasarError(Exception):
+    pass
+
+def create_moyasar_invoice(user, plan) -> dict:
+    """
+    Create an invoice in Moyasar using Secret Key via Basic Auth.
+    Returns the JSON response. Raises MoyasarError on failure.
+    """
+    url = f"{settings.MOYASAR_API_BASE}/invoices"
+    payload = {
+        "amount": int(plan.price_sar * 100),  # هللة
+        "currency": "SAR",
+        "description": f"Plan {plan.name} - {plan.attempts} attempts",
+        "callback_url": settings.MOYASAR_CALLBACK_URL,
+        # "redirect_url": "http://127.0.0.1:8000/subscriptions/thanks/",
+        "metadata": {
+            "user_id": user.id,
+            "plan_id": plan.id,
+        },
+    }
+
+    try:
+        # أهم سطر: auth=(SECRET_KEY, "")
+        r = requests.post(url, json=payload, auth=(settings.MOYASAR_SECRET_KEY, ""))
+        if r.status_code >= 400:
+            # اطبع الرد للمساعدة
+            raise MoyasarError(f"{r.status_code} {r.text}")
+        return r.json()
+    except requests.RequestException as e:
+        raise MoyasarError(str(e)) from e

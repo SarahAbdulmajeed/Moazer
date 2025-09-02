@@ -14,8 +14,22 @@ from pathlib import Path
 from decouple import config
 import os
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
+
 load_dotenv()  
 
+
+MOYASAR_PUBLIC_KEY = os.getenv("MOYASAR_PUBLIC_KEY", "").strip()
+MOYASAR_SECRET_KEY = os.getenv("MOYASAR_SECRET_KEY", "").strip()
+MOYASAR_MODE = os.getenv("MOYASAR_MODE", "test").strip()
+SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:8000").strip()
+
+MOYASAR_API_BASE = "https://api.moyasar.com/v1"
+
+if not MOYASAR_SECRET_KEY:
+    raise ImproperlyConfigured("MOYASAR_SECRET_KEY is missing from environment (.env).")
+if len(MOYASAR_SECRET_KEY) < 25: 
+    raise ImproperlyConfigured(f"MOYASAR_SECRET_KEY looks too short (len={len(MOYASAR_SECRET_KEY)}). Re-copy it from dashboard.")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

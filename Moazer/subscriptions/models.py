@@ -4,10 +4,7 @@ from django.conf import settings
 User = settings.AUTH_USER_MODEL
 
 class Plan(models.Model):
-    """
-    A simple prepaid plan that grants a fixed number of attempts.
-    You can later add price/stripe_product_id/etc.
-    """
+    """Prepaid plan that grants fixed attempts."""
     name = models.CharField(max_length=100, unique=True)
     attempts = models.PositiveIntegerField(default=5)
     price_sar = models.DecimalField(max_digits=8, decimal_places=2, default=0)  # optional
@@ -16,9 +13,7 @@ class Plan(models.Model):
         return f"{self.name} ({self.attempts} attempts)"
 
 class Wallet(models.Model):
-    """
-    Per-user wallet for attempts that can be spent on any product.
-    """
+    """Per-user wallet for attempts."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="wallet")
     total_attempts = models.IntegerField(default=0)
 
@@ -51,3 +46,24 @@ class UsageLog(models.Model):
     product_code = models.CharField(max_length=50)  # e.g., "ai_interview"
     amount = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class SubscriptionPurchase(models.Model):
+    """
+    Records a Moyasar invoice/payment tied to a plan and user.
+    Used to grant attempts exactly once (idempotent).
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="plan_purchases")
+    plan = models.ForeignKey(Plan, on_delete=models.PROTECT, related_name="purchases")
+
+    # Moyasar invoice fields
+    invoice_id = models.CharField(max_length=64, unique=True)
+    status = models.CharField(max_length=20, default="created")  # created, paid, failed, ...
+    amount_sar = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    granted = models.BooleanField(default=False)  # True after wallet attempts are granted
+
+    def __str__(self):
+        return f"Purchase({self.user_id}, {self.plan_id}, {self.invoice_id}, {self.status})"
