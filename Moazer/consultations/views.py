@@ -40,16 +40,26 @@ def is_expert(user) -> bool:
 # -------------------------------------------------------------------
 
 @login_required
+@login_required
 def list_view(request):
     """
-    List consultations filtered by actual role (student vs expert).
+    List consultations filtered by actual role (student vs expert vs admin).
     """
-    if is_expert(request.user):
-        qs = Consultation.objects.filter(expert=request.user).order_by("-updated_at")
+    user = request.user
+
+    # If admin → show all consultations
+    if user.is_staff or user.is_superuser:
+        qs = Consultation.objects.all().order_by("-updated_at")
+        role_flag = None  # admin doesn't need role_flag
+
+    # If expert → show consultations assigned to them
+    elif is_expert(user):
+        qs = Consultation.objects.filter(expert=user).order_by("-updated_at")
         role_flag = True
+
+    # Otherwise → student
     else:
-        # default to student-view (إن لم يكن خبير)
-        qs = Consultation.objects.filter(student=request.user).order_by("-updated_at")
+        qs = Consultation.objects.filter(student=user).order_by("-updated_at")
         role_flag = False
 
     # Filter based on status
@@ -64,8 +74,18 @@ def list_view(request):
 
     qs = qs.order_by("-updated_at")
 
-
-    return render(request, "consultations/list.html", {"items": qs, "is_expert": role_flag, "status_choices": ConsultationStatus.choices, "ctype_choices": ConsultationTypeChoices.choices, "selected_status": status, "selected_type": ctype})
+    return render(
+        request,
+        "consultations/list.html",
+        {
+            "items": qs,
+            "is_expert": role_flag,
+            "status_choices": ConsultationStatus.choices,
+            "ctype_choices": ConsultationTypeChoices.choices,
+            "selected_status": status,
+            "selected_type": ctype,
+        },
+    )
 
 # -------------------------------------------------------------------
 # Create a consultation for a specific expert (expert_id comes via URL).
@@ -125,25 +145,32 @@ def create_view(request, expert_id: int):
 #   * expert_accept      → expert moves to ACTIVE
 #   * expert_reject      → expert closes
 #   * expert_end         → expert marks as COMPLETED (no rating)
+#   * Admin can view only (read-only).
 # -------------------------------------------------------------------
 @login_required
 def detail_view(request, consultation_id: int):
     c = get_object_or_404(Consultation, pk=consultation_id)
 
-    # Only participants may view
-    if c.student_id != request.user.id and c.expert_id != request.user.id:
+    # Allow participants OR admin
+    if not (
+        c.student_id == request.user.id
+        or c.expert_id == request.user.id
+        or request.user.is_staff
+    ):
         messages.error(request, "غير مسموح.")
         return redirect("consultations:list_view")
 
+    # Flags
     user_is_expert = (request.user.id == c.expert_id)
     user_is_student = (request.user.id == c.student_id)
+    user_is_admin = request.user.is_staff
 
-    # Flags for template (avoid string-membership bugs in template)
     allow_student_end = (user_is_student and c.status == ConsultationStatus.ACTIVE)
-    allow_expert_end = (user_is_expert and c.status in [ConsultationStatus.ACTIVE, ConsultationStatus.PENDING])
+    allow_expert_end = (user_is_expert and c.status == ConsultationStatus.ACTIVE)
     allow_expert_decide = (user_is_expert and c.status == ConsultationStatus.PENDING)
 
-    if request.method == "POST":
+    # Prevent admin from doing POST actions
+    if request.method == "POST" and not user_is_admin:
         action = request.POST.get("action")
 
         if action == "send_message":
@@ -152,10 +179,7 @@ def detail_view(request, consultation_id: int):
                 ChatMessage.objects.create(consultation=c, sender=request.user, content=text)
             return redirect("consultations:detail_view", consultation_id=c.id)
 
-        if action == "end_consultation":
-            if not user_is_student:
-                messages.error(request, "فقط الطالب يمكنه إنهاء الاستشارة.")
-                return redirect("consultations:detail_view", consultation_id=c.id)
+        if action == "end_consultation" and user_is_student:
             return redirect("consultations:rate_view", consultation_id=c.id)
 
         if action == "expert_accept" and allow_expert_decide:
@@ -180,11 +204,13 @@ def detail_view(request, consultation_id: int):
         {
             "c": c,
             "is_expert": user_is_expert,
+            "is_admin": user_is_admin,   # 👈 مهم للتمييز في الـ template
             "allow_student_end": allow_student_end,
             "allow_expert_end": allow_expert_end,
             "allow_expert_decide": allow_expert_decide,
         },
     )
+
 
 # -------------------------------------------------------------------
 # Rating page (stars only, no comment).
@@ -202,25 +228,50 @@ def rate_view(request, consultation_id: int):
     """
     consultation = get_object_or_404(Consultation, pk=consultation_id)
 
-    # Authorization guard: only the student may rate
     if request.user.id != consultation.student_id:
         messages.error(request, "فقط الطالب يقيّم الاستشارة.")
         return redirect("consultations:detail_view", consultation_id=consultation.id)
 
     if request.method == "POST":
-        # Extract and validate rating (server-side safety)
         val = request.POST.get("rating")
         if val not in {"1", "2", "3", "4", "5"}:
             messages.error(request, "اختَر تقييمًا من 1 إلى 5.")
             return redirect("consultations:rate_view", consultation_id=consultation.id)
 
-        stars = int(val)
+        new_stars = int(val)
 
-        # Upsert rating; using defaults ensures 'stars' is never NULL on create
-        ConsultationRating.objects.update_or_create(
+        # Upsert consultation rating
+        rating_obj, created = ConsultationRating.objects.get_or_create(
             consultation=consultation,
-            defaults={"stars": stars, "comment": ""},  # comment intentionally empty
+            defaults={"stars": new_stars, "comment": ""},
         )
+
+        # Fetch expert profile
+        expert_profile = ExpertProfile.objects.filter(user=consultation.expert).first()
+        if expert_profile is not None:
+            # Adjust aggregates safely
+            if created:
+                # add new
+                total = expert_profile.rating_avg * expert_profile.rating_count
+                expert_profile.rating_count += 1
+                expert_profile.rating_avg = (total + new_stars) / expert_profile.rating_count
+            else:
+                # replace old with new
+                old = rating_obj.stars
+                if old != new_stars and expert_profile.rating_count > 0:
+                    total = expert_profile.rating_avg * expert_profile.rating_count
+                    total = total - old + new_stars
+                    expert_profile.rating_avg = total / expert_profile.rating_count
+
+            # round to 1 decimal (to match DecimalField(… , decimal_places=1))
+            expert_profile.rating_avg = round(float(expert_profile.rating_avg), 1)
+            expert_profile.save(update_fields=["rating_avg", "rating_count"])
+
+        # Save the latest stars on the record (if it was existing)
+        if not created and rating_obj.stars != new_stars:
+            rating_obj.stars = new_stars
+            rating_obj.comment = ""
+            rating_obj.save(update_fields=["stars", "comment"])
 
         # Mark consultation as completed
         consultation.status = ConsultationStatus.COMPLETED
@@ -229,9 +280,7 @@ def rate_view(request, consultation_id: int):
         messages.success(request, "تم إنهاء الاستشارة وتسجيل التقييم.")
         return redirect("consultations:detail_view", consultation_id=consultation.id)
 
-    # GET → render the star picker page
     return render(request, "consultations/rate.html", {"c": consultation})
-
 
 # -------------------------------------------------------------------
 # Lightweight polling endpoint that returns only the chat messages HTML.

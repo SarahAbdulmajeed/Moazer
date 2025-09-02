@@ -1,0 +1,15 @@
+{% extends "main/base.html" %}
+{% block title %} الصفحة غير موجودة {% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[80vh]">
+  <div class="text-center space-y-4">
+    <h1 class="text-5xl font-bold ">404</h1>
+    <p class="text-lg text-gray-600">عذراً، الصفحة التي تبحث عنها غير موجودة.</p>
+    <a href="{% url 'main:home_view' %}" 
+       class="inline-block mt-4 px-6 py-2 rounded-lg bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white">
+      العودة للرئيسية
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -336,20 +336,61 @@ def question_view(request, session_id: int, step: int):
 
 def list_view(request):
     """
-    Authenticated users: show their historical sessions + remaining attempts.
-    Guests: redirect to landing (they don't have a history).
+    Show career path sessions depending on user type:
+    - If staff (admin): show all sessions (with filters).
+    - If authenticated user: show only their sessions.
+    - If guest: redirect to landing (they don't have history).
     """
     if not request.user.is_authenticated:
         return redirect("career_path:landing")
-    items = PathSession.objects.filter(user=request.user).order_by("-created_at")
-    remaining = get_remaining_attempts(request.user)
-    return render(request, "career_path/list.html", {"items": items, "remaining": remaining})
+
+    if request.user.is_staff:
+        qs = PathSession.objects.select_related("user").order_by("-created_at")
+
+        # Apply filters (admin only)
+        status = request.GET.get("status")
+        if status:
+            qs = qs.filter(status=status)
+
+        mode = request.GET.get("mode")
+        if mode:
+            qs = qs.filter(mode=mode)
+
+        items = qs
+        remaining = None
+    else:
+        # Normal user: only their sessions
+        qs = PathSession.objects.filter(user=request.user).order_by("-created_at")
+        items = qs
+        remaining = get_remaining_attempts(request.user)
+
+    return render(
+        request,
+        "career_path/list.html",
+        {
+            "items": items,
+            "remaining": remaining,
+            "is_admin": request.user.is_staff,
+            "status_choices": PathStatus.choices,
+            "mode_choices": PathMode.choices,
+            "selected_status": request.GET.get("status"),
+            "selected_mode": request.GET.get("mode"),
+        },
+    )
 
 
 def result_view(request, session_id: int):
     """
-    Read-only session details with ownership enforcement (auth vs guest).
+    Read-only session details.
+    - Admin can open any session.
+    - Normal users/guests restricted by ownership.
     """
-    s = _get_owned_session_or_404(request, session_id)
+    if request.user.is_staff:
+        # Admin override: fetch any session
+        s = get_object_or_404(PathSession, pk=session_id)
+    else:
+        # Normal ownership enforcement
+        s = _get_owned_session_or_404(request, session_id)
+
     answers = PathAnswer.objects.filter(session=s).select_related("question").order_by("question__order")
     return render(request, "career_path/result.html", {"s": s, "answers": answers})

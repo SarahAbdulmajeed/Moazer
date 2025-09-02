@@ -1,22 +1,45 @@
-{% extends 'main/base.html' %}
+{% extends "main/base.html" %}
 {% block title %}ابدأ الآن{% endblock %}
 {% block content %}
-<div>
-  <h2>المقابلة الافتراضية AI</h2>
-  <p>الذكاء الاصطناعي يحاكي مقابلات العمل الواقعية من خلال طرح أسئلة احترافية مبنية على المسمى الوظيفي الذي تختاره. في نهاية المقابلة، ستحصل على تحليل شامل لأدائك يتضمن نقاط قوتك، الجوانب التي تحتاج تطويرها، وتوصيات لتحسين مهاراتك في المقابلات.</p>
-</div>
+<div class="min-h-[70vh] flex items-center justify-center content-center h-full">
+  <div class="bg-white/80 rounded-2xl shadow p-8 w-full max-w-3xl text-center glass-card">
+   
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center mb-4">المقابلة الافتراضية AI</h2>
+    
+    <!-- Description -->
+    <p class="text-center text-gray-800 mb-5 leading-relaxed">
+      الذكاء الاصطناعي يحاكي مقابلات العمل الواقعية من خلال طرح أسئلة احترافية 
+      مبنية على <b>المسمى الوظيفي</b> الذي تختاره.  
+      في نهاية المقابلة، ستحصل على تحليل شامل لأدائك يتضمن <b>نقاط قوتك</b>، 
+      <b>الجوانب التي تحتاج تطويرها</b>، وتوصيات لتحسين مهاراتك في المقابلات.
+    </p>
 
-<div>
-  <form method="post">{% csrf_token %}
-    <div>
-      <label>المسمى الوظيفي</label>
+    <!-- Attempts (if logged in) -->
+    {% if user.is_authenticated %}
+      {% if remaining is not None %}
+        <div class="mb-2 text-sm text-gray-700">
+          <p class="text-gray-800 mb-2 text-center text-sm">محاولاتك المتبقية: <b>{{ remaining }}</b></p>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <!-- Form -->
+    <form method="post" class="space-y-5">{% csrf_token %}
       <div>
-        <input name="job_title" placeholder="اكتب المسمى الوظيفي المراد …">
+        <label class="block text-sm font-semibold text-gray-700 mb-2 text-right">المسمى الوظيفي</label>
+        <input name="job_title" 
+               class="w-full border border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400" 
+               placeholder="مثال: مطور برمجيات">
       </div>
-    </div>
-    <div>
-      <button>ابدأ الآن</button>
-    </div>
-  </form>
+
+      <div class="flex justify-center">
+        <button class="px-6 py-2 rounded-lg bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white font-semibold hover:opacity-90 transition">
+          ابدأ الآن
+        </button>
+      </div>
+    </form>
+
+  </div>
 </div>
 {% endblock %}

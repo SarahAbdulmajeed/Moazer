@@ -1,34 +1,68 @@
 {% extends "main/base.html" %}
 {% load static %}
 
+{% block title %}اتصل بنا{% endblock %}
 {% block content %}
-<div class="container">
-    <h2>اتصل بنا</h2>
 
-    <form method="post">
-        {% csrf_token %}
-        <label>الاسم</label>
-        <input type="text" name="name" 
-               value="{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}" 
-               required>
+<div class="min-h-[70vh] flex items-center justify-center items-center h-full">
+  <div class="bg-white/80 rounded-2xl shadow p-8 w-full max-w-3xl glass-card ">
+    
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center mb-4">اتصل بنا</h2>
+    <p class="text-center text-gray-700 mb-6">نسعد بتواصلك معنا، يرجى تعبئة النموذج أدناه</p>
 
-        <label>البريد الإلكتروني</label>
-        <input type="email" name="email" 
-               value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" 
-               required>
+    <!-- Form -->
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
 
-        <label>رسالتك</label>
-        <textarea name="message" required></textarea>
+      {% if user.is_authenticated %}
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">الاسم</label>
+          <input type="text" value="{{ user.first_name }} {{ user.last_name }}" readonly
+                 class="w-full border border-gray-300 rounded-lg p-3 bg-gray-100 text-gray-700 cursor-not-allowed">
+        </div>
 
-        <button type="submit">إرسال</button>
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">البريد الإلكتروني</label>
+          <input type="email" value="{{ user.email }}" readonly
+                 class="w-full border border-gray-300 rounded-lg p-3 bg-gray-100 text-gray-700 cursor-not-allowed">
+        </div>
+      {% else %}
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">الاسم</label>
+          <input type="text" name="name" placeholder="أدخل اسمك" required
+                 class="w-full border border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">البريد الإلكتروني</label>
+          <input type="email" name="email" placeholder="أدخل بريدك الإلكتروني" required
+                 class="w-full border border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+      {% endif %}
+
+      <!-- Message -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">رسالتك</label>
+        <textarea name="message" rows="5" placeholder="اكتب رسالتك هنا..." required
+                  class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-center">
+        <button type="submit"
+                class="px-6 py-2 rounded-lg bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] 
+                       text-white font-semibold hover:opacity-90 transition">
+          إرسال
+        </button>
+      </div>
     </form>
 
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
+  </div>
 </div>
+
 {% endblock %}

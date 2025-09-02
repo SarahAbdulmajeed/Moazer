@@ -8,4 +8,5 @@ urlpatterns = [
     path("subscribe/<int:plan_id>/", views.subscribe_view, name="subscribe"),
     path("pay/<int:plan_id>/", views.create_invoice_and_redirect, name="pay"),
     path("callback/", views.callback_view, name="callback"),
+    path("delete/<int:plan_id>/", views.delete_plan_view, name="delete"),
 ]

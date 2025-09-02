@@ -37,9 +37,9 @@
             <tr class="border-t border-gray-200">
               <td class="py-2 pe-3">{{ c.id }}</td>
               {% if is_expert %}
-                <td class="py-2 pe-3">{{ c.student.username }}</td>
+                <td class="py-2 pe-3">{{ c.student.get_full_name }}</td>
               {% else %}
-                <td class="py-2 pe-3">{{ c.expert.username }}</td>
+                <td class="py-2 pe-3">{{ c.expert.get_full_name }}</td>
               {% endif %}
               <td class="py-2 pe-3">{{ c.get_type_display }}</td>
               <td class="py-2 pe-3">{{ c.updated_at|date:"Y-m-d" }}</td>

@@ -19,6 +19,8 @@ class StudentProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     study_stage = models.CharField(max_length=20, choices=STAGES)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+
 
 class Specialization(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -53,4 +55,7 @@ class ExpertProfile(models.Model):
     consultation_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)  # SAR
     rating_count = models.PositiveIntegerField(default=0)
     rating_avg = models.DecimalField(max_digits=3, decimal_places=1, default=0)  # e.g. 4.5
+
+    is_deleted = models.BooleanField(default=False)
+
 
