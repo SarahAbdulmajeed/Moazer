@@ -9,10 +9,36 @@ from django.db.models.functions import TruncMonth
 from career_path.models import PathSession
 from ai_interview.models import InterviewSession
 from consultations.models import Consultation
+from accounts.models import Specialization, ConsultationType
 
 def home_view(request: HttpRequest):
     for name in ["Students", "Experts"]:
         Group.objects.get_or_create(name=name)
+
+    specs = [
+        "إرشاد أكاديمي",
+        "مسارات الثانوية",
+        "توجيه مهني",
+        "تطوير الذات",
+        "إعداد المقابلات",
+        "كتابة السيرة الذاتية",
+        "إرشاد مهني للمرحلة الجامعية",
+        "توجيه طلاب الابتعاث",
+    ]
+    for s in specs:
+        Specialization.objects.get_or_create(name=s)
+
+    consults = [
+        "اختيار المسار الدراسي",
+        "اختيار المسار المهني",
+        "مراجعة خيارات التخصصات الجامعية",
+        "استفسار عام",
+        "الاستعداد للمقابلة الشخصية",
+        "مراجعة السيرة الذاتية",
+    ]
+    for c in consults:
+        ConsultationType.objects.get_or_create(name=c)
+        
 
     user = request.user
     group_name = user.groups.first().name if user.groups.exists() else None
