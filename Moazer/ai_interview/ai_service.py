@@ -59,31 +59,63 @@ def _openai_generate_questions(job_title: str, n: int = 5) -> list[str]:
         raise RuntimeError("Empty questions from model.")
     return uniq[:n]
 
+# Phrases that mean "I don't know" / non-answers (add more as needed)
+_INVALID_PHRASES = {
+     "مامرت علي", "لا ادري", "ما اعرف", "ما أعرف", "ماني عارف", "مدري", "لا اعلم", "لا أعلم",
+    "i don't know", "idk", "unknown", "n/a"
+}
+
+def _is_invalid_answer(text: str) -> bool:
+    """
+    Returns True if the answer should NOT be graded:
+    - empty/whitespace
+    - just dashes or punctuation
+    - common 'I don't know' phrases (Arabic & English)
+    - very short or gibberish-like (e.g., < = 2 words or mostly symbols/emoji)
+    """
+    if not text:
+        return True
+    t = text.strip().lower()
+    if not t:
+        return True
+    # Just a dash or punctuation
+    if re.fullmatch(r"[-–—_\.]+", t):
+        return True
+    # Common 'I don't know' phrases
+    norm = re.sub(r"\s+", " ", t)
+    if norm in _INVALID_PHRASES:
+        return True
+    # Too short / likely gibberish (e.g., ≤ 2 tokens, no Arabic letters)
+    tokens = re.findall(r"\w+", t, flags=re.UNICODE)
+    if len(tokens) <= 2:
+        # if it has no Arabic letters at all or looks random
+        if not re.search(r"[ء-ي]", t):
+            return True
+    # Mostly non-letters? (heuristic)
+    letters = re.findall(r"[A-Za-zء-ي]", t)
+    if letters and (len(letters) / max(1, len(t))) < 0.2:
+        return True
+    return False
+
 def analyze_session(job_title: str, qa_pairs: list[dict]) -> dict:
     """
-    Analyze per-answer + overall.
-    qa_pairs: [{"order":1,"question":"...","answer":"..."}, ...]
-    Returns:
-    {
-      "answers": [
-        {"order":1,"strengths":"..","weaknesses":"..","score":3},
-        ...
-      ],
-      "session": {
-        "strengths":"..","weaknesses":"..","recommendation":"..","overall_score":3.8
-      }
-    }
+    Analyze per-answer + overall with strict handling for invalid answers.
+    Any invalid answer gets score=0 and empty strengths/weaknesses,
+    and is EXCLUDED from the overall average.
     """
     _require_client()
 
-    # Build a compact prompt; ask STRICT JSON only.
+    # --- Build prompt with strict rules for invalid answers ---
     prompt = (
-        "أنت مدرّب مقابلات. حلّل إجابات عربية لمقابلة وفق الآتي:\n"
-        "1) لكل سؤال: strengths, weaknesses, score (عدد صحيح من 1 إلى 5).\n"
-        "2) ملخص عام: strengths, weaknesses, recommendation, overall_score (متوسط من 1 إلى 5، رقم عشري بمرتبة واحدة).\n"
-        "أعد JSON فقط بهذه البنية دون أي نص خارجي:\n"
+        "أنت مدرّب مقابلات. حلّل إجابات عربية وفق القواعد التالية:\n"
+        "- إذا كانت الإجابة غير صالحة (فارغة، شرطة فقط، «ما أعرف/مدري»، أو عشوائية/غير مرتبطة)، "
+        "فضع score=0 واترك strengths و weaknesses فارغتين.\n"
+        "- الإجابة الصالحة فقط تُقيّم من 1 إلى 5 (عدد صحيح).\n"
+        "- لا تذكر أي تعليقات خارج JSON.\n"
+        "- في الملخص العام overall_score احسب المتوسط على الإجابات الصالحة فقط (المستبعدة ذات score=0 لا تُحسب).\n"
+        "أعد JSON فقط بهذه البنية:\n"
         "{\n"
-        '  "answers":[{"order":1,"strengths":"..","weaknesses":"..","score":3},...],\n'
+        '  "answers":[{"order":1,"strengths":"", "weaknesses":"", "score":0}, ...],\n'
         '  "session":{"strengths":"..","weaknesses":"..","recommendation":"..","overall_score":3.8}\n'
         "}\n\n"
         f"المسمى الوظيفي: {job_title}\n"
@@ -92,40 +124,68 @@ def analyze_session(job_title: str, qa_pairs: list[dict]) -> dict:
     for item in qa_pairs:
         prompt += f"- س{item['order']}: {item['question']}\n  إجابة: {item.get('answer','')}\n"
 
-    try:
-        r = _client.responses.create(model="gpt-4o-mini", input=prompt)
-        txt = r.output_text.strip()
-        m = re.search(r"\{.*\}", txt, flags=re.S)
-        data = json.loads(m.group(0) if m else txt)
+    # --- Call the model ---
+    r = _client.responses.create(model="gpt-4o-mini", input=prompt)
+    txt = r.output_text.strip()
+    m = re.search(r"\{.*\}", txt, flags=re.S)
+    data = json.loads(m.group(0) if m else txt)
 
-        # Defensive normalization
-        answers = data.get("answers", []) or []
-        session = data.get("session", {}) or {}
-        for a in answers:
-            a["order"] = int(a.get("order", 0) or 0)
-            s = a.get("score")
-            a["score"] = int(s) if isinstance(s, (int, float, str)) and str(s).isdigit() else None
-            a["strengths"] = (a.get("strengths") or "").strip()
-            a["weaknesses"] = (a.get("weaknesses") or "").strip()
+    # --- Normalize model output ---
+    answers = data.get("answers", []) or []
+    session = data.get("session", {}) or {}
 
-        # If model didn't return overall_score, compute mean of available scores
-        if "overall_score" not in session or session.get("overall_score") in (None, ""):
-            valid = [a["score"] for a in answers if isinstance(a["score"], int)]
-            session["overall_score"] = round(sum(valid) / len(valid), 1) if valid else None
+    # Map answers by order for easy overwrite with local validator
+    by_order = {a.get("order"): a for a in answers}
 
-        session["strengths"] = (session.get("strengths") or "").strip()
-        session["weaknesses"] = (session.get("weaknesses") or "").strip()
-        session["recommendation"] = (session.get("recommendation") or "").strip()
+    valid_scores = []
+    for item in qa_pairs:
+        order = int(item.get("order", 0) or 0)
+        ans_text = (item.get("answer") or "").strip()
+        row = by_order.get(order, {"order": order})
 
-        return {"answers": answers, "session": session}
+        # Normalize fields coming from model
+        row["order"] = order
+        row["strengths"] = (row.get("strengths") or "").strip()
+        row["weaknesses"] = (row.get("weaknesses") or "").strip()
+        s = row.get("score")
+        try:
+            row["score"] = int(s)
+        except Exception:
+            row["score"] = None
 
-    except openai_error.RateLimitError:
-        # If quota is exceeded, return neutral structure (avoid crashing)
-        return {"answers": [
-                    {"order": item["order"], "strengths": "", "weaknesses": "", "score": None}
-                    for item in qa_pairs
-                ],
-                "session": {"strengths": "", "weaknesses": "", "recommendation": "", "overall_score": None}}
+        # --- Local hard rule: overwrite invalid answers ---
+        if _is_invalid_answer(ans_text):
+            row["strengths"] = ""
+            row["weaknesses"] = ""
+            row["score"] = 0  # explicitly zero for invalid/empty/etc.
+        else:
+            # Ensure valid range 1..5 for non-zero scores
+            if isinstance(row["score"], int):
+                if row["score"] < 1: row["score"] = 1
+                if row["score"] > 5: row["score"] = 5
+
+        # Collect valid scores only (>0) for averaging
+        if isinstance(row["score"], int) and row["score"] > 0:
+            valid_scores.append(row["score"])
+
+        by_order[order] = row
+
+    # Rebuild ordered list
+    normalized_answers = [by_order[o] for o in sorted(by_order)]
+
+    # --- Session-level fields ---
+    session["strengths"] = (session.get("strengths") or "").strip()
+    session["weaknesses"] = (session.get("weaknesses") or "").strip()
+    session["recommendation"] = (session.get("recommendation") or "").strip()
+
+    # Average ONLY over valid (>0) scores; if none valid, overall=0.0
+    if valid_scores:
+        session["overall_score"] = round(sum(valid_scores) / len(valid_scores), 1)
+    else:
+        session["overall_score"] = 0.0
+
+    return {"answers": normalized_answers, "session": session}
+
 
 # ---------- PUBLIC API ----------
 
