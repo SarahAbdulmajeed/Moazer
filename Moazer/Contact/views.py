@@ -8,11 +8,9 @@ from django.conf import settings
 def contact_view(request):
     if request.method == "POST":
         if request.user.is_authenticated:
-            # للمسجل
             name = request.user.get_full_name() or request.user.username
             email = request.user.email
         else:
-            # للزائر
             name = request.POST.get("name", "").strip()
             email = request.POST.get("email", "").strip()
 
@@ -46,6 +44,7 @@ def contact_messages_view(request):
     }
     return render(request, "contact/admin_messages.html", context)
 
+@staff_member_required
 def reply_message_view(request, message_id):
     msg = get_object_or_404(ContactMessage, id=message_id)
     

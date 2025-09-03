@@ -1,53 +1,41 @@
 {% extends "main/base.html" %}
 {% block title %}الاشتراكات{% endblock %}
+{% block subscriptions_nav %} font-semibold {% endblock %}
 {% block content %}
-<h3 class="mb-4">الباقات</h3>
 
-<div class="grid gap-3 md:grid-cols-3">
-  {% for p in plans %}
-  <div class="border rounded p-4 bg-white/80">
-    <div class="text-lg font-semibold">{{ p.name }}</div>
-    <div class="mt-1 text-sm">المحاولات: <strong>{{ p.attempts }}</strong></div>
-    <div class="mt-1 text-sm">السعر: <strong>{{ p.price_sar }}</strong> ر.س</div>
-    <!-- Moyasar: create invoice and redirect -->
-    <form method="post" action="{% url 'subscriptions:pay' p.id %}" class="mt-3">
-    {% csrf_token %}
-    <button class="inline-block px-3 py-1 rounded bg-black text-white">
-        ادفع عبر ميسّر
-    </button>
-    </form>
-
-<div class="max-w-6xl mx-auto py-10">
+<div class="p-6">
   <!-- Title + Add Button -->
   <div class="flex items-center justify-between mb-6">
-    <h3 class="text-2xl font-bold">الباقات</h3>
+    <h2 class="text-lg font-semibold sm:text-right">الباقات</h2>
     {% if form %}
-    <button onclick="document.getElementById('planModal').classList.remove('hidden')" 
-            class="px-4 py-2 bg-[linear-gradient(300deg,_#699ac2,_#4c7596)] text-white rounded-lg hover:opacity-90 transition">
+    <button onclick="document.getElementById('planModal').classList.remove('hidden')" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:opacity-90 transition">
       + إضافة باقة
     </button>
     {% endif %}
   </div>
 
   <!-- Plans Grid -->
-  <div class="grid gap-6 md:grid-cols-3 mb-12">
-{% for p in plans %}
-<div class="bg-white/80 glass-card rounded-2xl p-6 shadow hover:shadow-lg transition flex flex-col">
-  <div class="text-xl font-semibold mb-2">{{ p.name }}</div>
+<div class="grid gap-6 md:grid-cols-3 mb-12">
+  {% for p in plans %}
+  <div class="rounded-2xl p-6 hover:shadow-lg flex flex-col relative overflow-hidden bg-gradient-to-b from-[#f9dc85]/50 to-transparent h-[50vh]">  
+  <div class="text-xl font-semibold mb-2 text-center">{{ p.name }}</div>
   <div class="mt-1 text-sm text-gray-600">المحاولات: <strong>{{ p.attempts }}</strong></div>
   <div class="mt-1 text-sm text-gray-600">السعر: <strong>{{ p.price_sar }}</strong> ر.س</div>
 
   <div class="mt-2 flex flex-row w-full gap-2 justify-end">
     {% if user.groups.all.0.name == 'Students' %}
-      <a class="px-4 py-2 rounded-lg bg-black text-white text-center hover:bg-gray-800 transition w-full"
-         href="{% url 'subscriptions:subscribe' p.id %}">اشترك الآن</a>
+    <!-- Moyasar: create invoice and redirect -->
+    <form method="post" action="{% url 'subscriptions:pay' p.id %}" class="mt-3">
+      {% csrf_token %}
+      <button class="px-4 py-2 rounded-full bg-[#f9dc85] text-black text-center hover:bg-[#ffd489] transition w-full mt-6">ادفع عبر ميسّر</button>
+    </form>
     {% endif %}
 
     {% if is_admin %}
       <!-- Delete Button -->
       <button type="button"
               onclick="document.getElementById('deleteModal-{{ p.id }}').classList.remove('hidden')"
-              class="px-4 py-2 rounded-lg bg-red-500 text-white text-center hover:bg-red-700 transition">
+              class="px-4 py-2 rounded-lg bg-[#bf5748] text-white text-center hover:bg-[#fc8c78] transition">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mx-auto">
           <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21 c.342.052.682.107 1.022.166m-1.022-.165 L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084 a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79 m14.456 0a48.108 48.108 0 0 0-3.478-.397 m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201 a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
         </svg>
@@ -78,12 +66,11 @@
       <form method="post" action="{% url 'subscriptions:delete' p.id %}">
         {% csrf_token %}
         <button type="submit"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                class="px-4 py-2 bg-[#bf5748] text-white rounded-lg hover:bg-[#fc8c78]">
           حذف
         </button>
       </form>
     </div>
-
   </div>
 </div>
 {% endfor %}
@@ -118,8 +105,6 @@
 </div>
 {% endif %}
 </div>
-
-
 
 <!-- Optional animation -->
 <style>

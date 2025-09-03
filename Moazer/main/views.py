@@ -1,8 +1,7 @@
 from django.shortcuts import render , redirect
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.models import Group
-from django.db.models import Count
-from django.db.models import Sum
+from django.db.models import Count,Sum
 from django.utils import timezone
 import datetime
 from django.db.models.functions import TruncMonth
@@ -33,6 +32,40 @@ def home_view(request: HttpRequest):
             "total_consultations": Consultation.objects.filter(expert=user).count(),
             "active_consultations": Consultation.objects.filter(expert=user, status="ACTIVE").count(),
             "completed_consultations": Consultation.objects.filter(expert=user, status="COMPLETED").count(),
+        })
+
+        today = timezone.now().date().replace(day=1)
+        months = [today - datetime.timedelta(days=30*i) for i in range(5, -1, -1)]
+        labels = [m.strftime("%b %Y") for m in months]
+        income_data = []
+
+        for m in months:
+            next_month = (m + datetime.timedelta(days=32)).replace(day=1)
+            total_income = (
+                Consultation.objects.filter(expert=user, created_at__gte=m, created_at__lt=next_month)
+                .aggregate(total=Sum("price_at_booking"))["total"] or 0
+            )
+            income_data.append(float(total_income))
+
+        context.update({
+            "income_labels": labels,
+            "income_data": income_data,
+        })
+
+        consultation_stats = (
+            Consultation.objects.filter(expert=user)
+            .values("type")
+            .annotate(total=Count("id"))
+        )
+        consultation_labels = [
+            dict(Consultation._meta.get_field("type").choices).get(c["type"], c["type"])
+            for c in consultation_stats
+        ]
+        consultation_data = [c["total"] for c in consultation_stats]
+
+        context.update({
+            "consultation_labels": consultation_labels,
+            "consultation_data": consultation_data,
         })
 
     if user.is_staff or user.is_superuser:
@@ -72,7 +105,6 @@ def home_view(request: HttpRequest):
         })
 
     return render(request, "main/index.html", context)
-
 
 def error_view(request: HttpRequest):
     return render(request, "main/error.html")
