@@ -169,11 +169,15 @@ def question_view(request, session_id: int, step: int):
 @login_required
 def result_view(request, session_id: int):
     """
-    Final result page showing:
-      - job title, status, AI strengths/weaknesses/recommendation,
-      - and Q/A log.
+    Final result page:
+    - If admin/staff: can view any session.
+    - If normal user: only their own sessions.
     """
-    s = get_object_or_404(InterviewSession, pk=session_id, user=request.user)
+    if request.user.is_staff:
+        s = get_object_or_404(InterviewSession, pk=session_id)
+    else:
+        s = get_object_or_404(InterviewSession, pk=session_id, user=request.user)
+
     answers = (
         InterviewAnswer.objects.filter(session=s)
         .select_related("question")
